@@ -44,8 +44,23 @@ dkz-ai_chat/
 ├── index.html          # Hauptseite
 ├── style.css           # Modul-spezifische Styles
 ├── *.js                # Logik
+├── multiplexer/        # 🖥️ Cosmo Multiplexer Umgebung (Zellij)
 └── README.md           # Diese Datei
 ```
+
+## 🖥️ Cosmo Multiplexer Umgebung
+
+Die Terminal-Version der Cosmo/Matrix Dashboards: eine **Zellij**-basierte
+Multiplexer-Umgebung mit 5 Profilen — **Desktop · VPS · Agent · Builder
+(mit Teststrassen-Erfassung) · Monitor** — lauffähig unter **Linux, Windows
+(WSL) und Docker**.
+
+```bash
+cd multiplexer && ./install.sh     # Linux/macOS/WSL
+cosmo desktop                       # oder: agent · builder · vps · monitor
+```
+
+→ Details in [`multiplexer/README.md`](multiplexer/README.md).
 
 ## 🔗 Teil des DEVKiTZ™ Ecosystem
 

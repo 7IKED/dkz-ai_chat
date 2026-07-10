@@ -1,0 +1,65 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  COSMO_V2 // MULTIPLEXER  ·  docker-compose                         ║
+# ║  Ein Service je Profil. Anhaengen mit:                             ║
+# ║     docker compose run --rm agent                                  ║
+# ║     docker compose run --rm builder                                ║
+# ╚══════════════════════════════════════════════════════════════════╝
+# Build-Kontext ist das multiplexer/ Verzeichnis (Parent), damit COPY .
+# die komplette Cosmo-Struktur ins Image bekommt.
+
+x-cosmo-base: &cosmo-base
+  build:
+    context: ..
+    dockerfile: docker/Dockerfile
+  image: devkitz/cosmo-mux:latest
+  stdin_open: true      # -i  (interaktives Terminal)
+  tty: true             # -t
+  working_dir: /work
+  volumes:
+    - ../../:/work                       # Projekt-Root ins Arbeitsverzeichnis
+    - cosmo-captures:/opt/cosmo/.captures
+  environment:
+    TERM: xterm-256color
+
+services:
+  desktop:
+    <<: *cosmo-base
+    command: ["desktop"]
+
+  agent:
+    <<: *cosmo-base
+    command: ["agent"]
+    environment:
+      TERM: xterm-256color
+      # COSMO_AGENT_CMD: "python orchestrator.py"
+      # COSMO_AGENT_STATUS_URL: "http://host.docker.internal:8080/status"
+
+  builder:
+    <<: *cosmo-base
+    command: ["builder"]
+    environment:
+      TERM: xterm-256color
+      # COSMO_BUILD_A: "npm run build"
+      # COSMO_TEST_CMD: "npm test"
+    # Docker-in-Docker fuer die DOCKER-BUILD Lane (optional, Vorsicht):
+    # volumes:
+    #   - /var/run/docker.sock:/var/run/docker.sock
+
+  vps:
+    <<: *cosmo-base
+    command: ["vps"]
+    volumes:
+      - ../../:/work
+      - cosmo-captures:/opt/cosmo/.captures
+      - ${HOME}/.ssh:/root/.ssh:ro       # SSH-Keys read-only einhaengen
+    environment:
+      TERM: xterm-256color
+      # COSMO_VPS_HOSTS: "user@1.2.3.4 admin@vps.example.com"
+
+  monitor:
+    <<: *cosmo-base
+    command: ["monitor"]
+    pid: "host"          # Host-Prozesse im Monitor sehen (optional)
+
+volumes:
+  cosmo-captures:

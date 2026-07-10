@@ -1,0 +1,19 @@
+// COSMO MATRIX — eigenstaendige Theme-Datei fuer ~/.config/zellij/themes/
+// HINWEIS: config.kdl enthaelt dieses Theme bereits inline. Nutze DIESE
+// Datei nur, wenn du das Theme aus config.kdl entfernst — sonst gibt es
+// eine doppelte Theme-Definition. Der Installer verlinkt sie daher NICHT.
+themes {
+    cosmo-matrix {
+        fg      "#00FF41"
+        bg      "#050a05"
+        black   "#000000"
+        red     "#ff3333"
+        green   "#00FF41"
+        yellow  "#ffb000"
+        blue    "#008F11"
+        magenta "#39FF14"
+        cyan    "#008F11"
+        white   "#e5e7eb"
+        orange  "#ffb000"
+    }
+}

@@ -1,0 +1,46 @@
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  PROFIL 5 · MONITOR / SECURITY  //  Focus-View                     ║
+// ║  cosmo monitor                                                     ║
+// ╚══════════════════════════════════════════════════════════════════╝
+// Nachbau des Cosmo "FOCUS_VIEW (SECURITY)" + GRID Mockups:
+// System, Netzwerk, Security, globale Logs auf einen Blick.
+
+layout {
+    default_tab_template {
+        pane size=1 borderless=true { plugin location="zellij:tab-bar" }
+        children
+        pane size=2 borderless=true { plugin location="zellij:status-bar" }
+    }
+
+    tab name="GRID" focus=true {
+        pane split_direction="horizontal" {
+            pane split_direction="vertical" {
+                pane name="SYS" {
+                    command "bash"
+                    args "-lc" "btop 2>/dev/null || htop 2>/dev/null || top"
+                }
+                pane name="NET" {
+                    command "bash"
+                    args "-lc" "bmon 2>/dev/null || (watch -n1 'ss -tunap 2>/dev/null | head -30')"
+                }
+            }
+            pane split_direction="vertical" {
+                pane name="SECURITY" {
+                    command "bash"
+                    args "-lc" "watch -n5 '(last -n 10 2>/dev/null; echo; echo FAILED:; grep -i \"fail\" /var/log/auth.log 2>/dev/null | tail -8) || echo security-logs n/a'"
+                }
+                pane name="DISK" {
+                    command "bash"
+                    args "-lc" "watch -n5 'df -h 2>/dev/null | grep -vE \"tmpfs|udev\"; echo; du -sh * 2>/dev/null | sort -rh | head -8'"
+                }
+            }
+        }
+    }
+
+    tab name="GLOBAL-LOGS" {
+        pane name="ALL-LOGS" {
+            command "bash"
+            args "-lc" "journalctl -f 2>/dev/null || tail -f /var/log/*.log 2>/dev/null || (echo '[COSMO] keine Logs — Shell'; exec bash)"
+        }
+    }
+}
