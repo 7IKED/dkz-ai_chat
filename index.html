@@ -1,39 +1,39 @@
-<!-- @DKZ:RULES → Lies REGELWERK.md + ORDNER.ini bevor du hier arbeitest! -->
-<!-- @DKZ:DOCS  → features.json (MOD-021) | REGISTRY.json | BLAUPAUSE.md -->
+<!-- @DKZ:REGELN → Lies REGELWERK.md + ORDNER.ini vor du hier arbeitest! -->
+<!-- @DKZ:DOCS → features.json (MOD-021) | REGISTRY.json | BLAUPAUSE.md -->
 <!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 Super Grok AI Chat — DkZ™ v0.04.0</title>
-    <link rel="stylesheet" href="../../shared/dkz-theme.css">
-    <link rel="manifest" href="../../shared/manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #060608; --card: #111114; --card2: #1a1a1e; --card3: #222226;
-            --border: #2a2a30; --text: #f0f0f2; --muted: #8888a0;
-            --accent: #fa1e4e; --accent-dim: rgba(250,30,78,.12);
-            --green: #00ff88; --green-dim: rgba(0,255,136,.10);
-            --blue: #4488ff; --blue-dim: rgba(68,136,255,.10);
-            --yellow: #ffb800; --yellow-dim: rgba(255,184,0,.10);
-            --purple: #a855f7; --purple-dim: rgba(168,85,247,.10);
-            --orange: #ff6b35; --cyan: #06b6d4;
-            --radius: 14px; --radius-sm: 8px;
-            --font: 'Inter', -apple-system, sans-serif;
-            --mono: 'JetBrains Mono', monospace
+<HTML lang="de">
+<Kopf>
+    <Meta Zeugensatz="UTF-8">
+    <Meta Name="Ansichtsfenster" Inhalieren=„Breite=Gerätebreite, Fangsskala=1,0“>
+    <Titel>🤖 Super Grok AI Chat — DkZ™ v0.04.0</Titel>
+    <Link rel="Stylesheet" href="../../shared/dkz-theme.css">
+    <Link rel="Manifest" href="../../shared/manifest.json">
+    <Link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <Stil>
+        : Wurzel {
+            --bg: #060608; - Karte: #111114; - Karte2: #1a1a1e; - Karte3: #222226;
+            - Grenze: #2a2a30; --Text: #f0f0f2; - Stummgeschaltet: #8888a0;
+            - Akzent: #fa1e4e; - Akzent-dim: Rgba(250,30,78,.12);
+            - grün: #00ff88; --grün-dunkel: Rgba(0,255,136,.10);
+            - blau: #4488ff; --blau-dunkel: Rgba(68,136,255,.10);
+            --gelb: #ffb800; - gelb-dim: Rgba(255,184,0,.10);
+            - lila: #a855f7; --lila-dunkel: Rgba(168,85,247,.10);
+            - orange: #ff6b35; --cyan: #06b6d4;
+            - Radius: 14px; - Radius-sm: 8px;
+            --Schriftart: 'Inter', -apple-system, serifenlos;
+            --mono: „JetBrains Mono“, Monospace
         }
-        * { margin:0; padding:0; box-sizing:border-box }
-        body { font-family:var(--font); background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column; overflow:hidden }
+        * { Marge:0; Polsterung:0; Kastengrüße:Randkasten }
+        Körper { Schriftfamilie:var(--Schriftart); Hintergrund:var(--bg); Farbe:var(--text); Höhe:100vh; Anzeige:flex; Flex-Richtung:Spalte; Überlauf:versteck }
 
-        /* ═══ Ambient ═══ */
-        .bg-ambient { position:fixed; inset:0; pointer-events:none; z-index:0;
-            background: radial-gradient(ellipse 600px 400px at 15% 20%, rgba(250,30,78,.05) 0%, transparent 70%),
-                        radial-gradient(ellipse 500px 500px at 85% 80%, rgba(68,136,255,.03) 0%, transparent 70%) }
+        /* ═══ Umgebung ═══ */
+        .bg-Umgebung { Position:fixiert; Einsatz:0; Zeigereignisse:keiner; z-index:0;
+            Hintergrund: Radialgradient(Ellipse 600px 400px bei 15% 20%, Rgba(250,30,78,.05) 0%, transparent 70%),
+                        Radialgradient(Ellipse 500px 500px bei 85% 80%, Rgba(68,136,255,.03) 0%, transparent 70%) }
 
-        /* ═══ Header ═══ */
-        .header { display:flex; align-items:center; justify-content:space-between; padding:10px 20px;
-            background:rgba(17,17,20,.85); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); z-index:10; position:relative }
+        /* ═══ Kopfzeile ═══ */
+        .Kopfzeile { Anzeige:biegen; Elemente anzeigen:Zentrum; Einlass beginnen:Raum-zwischen; Polsterung:10px 20px;
+            Hintergrund:Rgba(17,17,20,.85); Hintergrundfilter:verwischen(20px); Rand unten:1px fest var(- Grenze); z-index:10; position:relative }
         .header a { color:var(--accent); text-decoration:none; font-weight:600; font-size:.85rem }
         .header h1 { font-size:1rem; font-weight:700; letter-spacing:-.02em }
         .header .v { color:var(--muted); font-size:.72rem; font-family:var(--mono) }
