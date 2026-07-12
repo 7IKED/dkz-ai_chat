@@ -1,0 +1,8 @@
+# Geheimnisse & Laufzeitdaten — NIE committen
+.env
+data/
+
+# Build-Artefakte Version 3
+exe/payload.tar.gz
+exe/dist/
+exe/go.sum

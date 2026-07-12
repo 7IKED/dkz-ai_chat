@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  ODYSSEUS // LAUNCHER  ·  DEVKiTZ Version 2                        ║
+# ╚══════════════════════════════════════════════════════════════════╝
+#  odysseus            Terminal starten (Stack muss laufen: odysseus up)
+#  odysseus up|down    Docker-Stack starten/stoppen
+#  odysseus status     Systemstatus
+#  odysseus init       Gitea einrichten (Admin/Org/Repo) + Repo pushen
+#  odysseus vault ...  Agenten-Vault (vault.sh)
+#  odysseus say "..."  Voicebox
+set -uo pipefail
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+    D="$(cd -P "$(dirname "$SOURCE")" && pwd)"; SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$D/$SOURCE"
+done
+export ODYSSEUS_DIR="$(cd -P "$(dirname "$SOURCE")/.." && pwd)"
+G='\033[38;5;46m'; R='\033[38;5;196m'; N='\033[0m'
+
+# .env laden (Ports, Admin) falls vorhanden
+[ -f "$ODYSSEUS_DIR/.env" ] && { set -a; . "$ODYSSEUS_DIR/.env"; set +a; }
+
+case "${1:-terminal}" in
+    up|down|status|logs) "$ODYSSEUS_DIR/scripts/odysseus-ctl.sh" "$1";;
+    init)   "$ODYSSEUS_DIR/scripts/gitea-init.sh" setup && "$ODYSSEUS_DIR/scripts/gitea-init.sh" push;;
+    vault)  shift; "$ODYSSEUS_DIR/scripts/vault.sh" "$@";;
+    chat)   shift; "$ODYSSEUS_DIR/scripts/nanochat.sh" "$@";;
+    say)    shift; "$ODYSSEUS_DIR/scripts/voice.sh" "$@";;
+    browse) shift; "$ODYSSEUS_DIR/scripts/browser.sh" "$@";;
+    terminal)
+        command -v zellij >/dev/null 2>&1 || { echo -e "${R}[ODYSSEUS] zellij fehlt — ../multiplexer/install.sh${N}"; exit 127; }
+        exec zellij --config "$ODYSSEUS_DIR/config/config.kdl" \
+                    --session odysseus \
+                    --new-session-with-layout "$ODYSSEUS_DIR/layouts/odysseus.kdl"
+        ;;
+    *) sed -n '5,12p' "$0";;
+esac

@@ -1,0 +1,79 @@
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  ODYSSEUS // TERMINAL  ·  DEVKiTZ Version 2                        ║
+// ║  Geschlossenes System: Gitea · Cloud/Fotos · nanoChat · Vault ·   ║
+// ║  Atuin-Logs · Voicebox — alles im Matrix-Terminal.                ║
+// ╚══════════════════════════════════════════════════════════════════╝
+layout {
+    default_tab_template {
+        pane size=1 borderless=true { plugin location="zellij:tab-bar"; }
+        children
+        pane size=2 borderless=true { plugin location="zellij:status-bar"; }
+    }
+
+    // TAB 1 — BRIDGE: Kommandozentrale
+    tab name="BRIDGE" focus=true {
+        pane split_direction="horizontal" {
+            pane size="55%" split_direction="vertical" {
+                pane size="40%" name="SYSTEM" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/odysseus-ctl.sh watch"
+                }
+                pane name="OPERATOR" focus=true {
+                    command "bash"
+                }
+            }
+            pane split_direction="vertical" {
+                pane name="nanoCHAT" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/nanochat.sh; exec bash"
+                }
+                pane name="VAULT" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/vault.sh help; exec bash"
+                }
+            }
+        }
+    }
+
+    // TAB 2 — BROWSER: Dienste im Terminal surfen
+    tab name="BROWSER" {
+        pane split_direction="vertical" {
+            pane name="GITEA" {
+                command "bash"
+                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/browser.sh gitea; exec bash"
+            }
+            pane name="DIENSTE" {
+                command "bash"
+                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/browser.sh; exec bash"
+            }
+        }
+    }
+
+    // TAB 3 — GITEA: Code + A2A-Bus
+    tab name="GITEA" {
+        pane split_direction="vertical" {
+            pane name="GIT" {
+                command "bash"
+                args "-lc" "git log --oneline -12 2>/dev/null; git status -sb 2>/dev/null; exec bash"
+            }
+            pane name="A2A-INBOX" {
+                command "bash"
+                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/nanochat.sh inbox ${ODYSSEUS_AGENT:-operator}"
+            }
+        }
+    }
+
+    // TAB 4 — LOGS: Stack-Logs + Atuin-History
+    tab name="LOGS" {
+        pane split_direction="horizontal" {
+            pane size="60%" name="STACK-LOGS" {
+                command "bash"
+                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/odysseus-ctl.sh logs"
+            }
+            pane name="ATUIN" {
+                command "bash"
+                args "-lc" "atuin history list --limit 20 2>/dev/null || echo '[ODYSSEUS] atuin-Client fehlt (cargo install atuin) — Server laeuft auf :8888'; exec bash"
+            }
+        }
+    }
+}

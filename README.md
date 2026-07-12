@@ -44,10 +44,15 @@ dkz-ai_chat/
 ├── index.html          # Hauptseite
 ├── style.css           # Modul-spezifische Styles
 ├── *.js                # Logik
-├── multiplexer/        # 🖥️ Cosmo Multiplexer Umgebung (Zellij + Zsh)
+├── multiplexer/        # 🖥️ V1: Cosmo Multiplexer (Zellij + Zsh) — stabil
+├── odysseus/           # 🛰️ V2: geschlossenes System (Gitea·Cloud·Chat·Vault) + V3: exe/
 ├── prototypes/         # 🟢 Matrix-Terminal-Prototypen (HTML, Galerie: index.html)
 └── README.md           # Diese Datei
 ```
+
+## 🛰️ Odysseus (Version 2 + 3)
+
+Das geschlossene Komplett-System im Matrix-Terminal: **Gitea** (Zentrum + A2A-Bus), **Nextcloud** mit **Immich**-Foto-Oberfläche, **nanoChat** (LibreChat), **KeePass-Vault** für Agenten-Keys, **Atuin**-Logs, **Voicebox** (Piper TTS) — plus **Version 3** als Single-File (`odysseus.exe`). → [`odysseus/README.md`](odysseus/README.md)
 
 ## 🖥️ Cosmo Multiplexer Umgebung
 

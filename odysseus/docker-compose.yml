@@ -1,0 +1,183 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  ODYSSEUS // GESCHLOSSENES SYSTEM  ·  DEVKiTZ™ Version 2           ║
+# ║  Alles FOSS · alles lokal · ein Stack:                             ║
+# ║  GITEA (Zentrum) · NEXTCLOUD · IMMICH (Foto-UI) · LIBRECHAT        ║
+# ║  (nanoChat) · ATUIN (Log/History-Sync) · VOICEBOX (Piper TTS)      ║
+# ║  · VAULT (KeePass fuer Agenten-Keys)                               ║
+# ╚══════════════════════════════════════════════════════════════════╝
+# Start:   docker compose up -d
+# Zugriff: nur 127.0.0.1 (geschlossenes System) — siehe README fuer LAN.
+# Konfiguration: .env (Vorlage: .env.example)
+
+name: odysseus
+
+networks:
+  odysseus:
+    driver: bridge
+
+volumes:
+  gitea-data:
+  nextcloud-data:
+  immich-upload:
+  immich-pgdata:
+  librechat-mongo:
+  atuin-pgdata:
+  vault-data:        # KeePass .kdbx — Agenten-Zugangsdaten & API-Keys
+  voice-data:
+
+services:
+
+  # ── GITEA — das Zentrum: Code, Issues, Webhooks (A2A-Bus) ─────────
+  gitea:
+    image: docker.gitea.com/gitea:1.24  # MIT
+    restart: unless-stopped
+    environment:
+      USER_UID: "1000"
+      USER_GID: "1000"
+      GITEA__database__DB_TYPE: sqlite3
+      GITEA__server__ROOT_URL: http://127.0.0.1:${GITEA_PORT:-3300}/
+      GITEA__server__DOMAIN: 127.0.0.1
+      GITEA__service__DISABLE_REGISTRATION: "false"   # nach Setup auf true!
+      GITEA__webhook__ALLOWED_HOST_LIST: "*"          # A2A-Webhooks intern
+    volumes:
+      - gitea-data:/data
+    ports:
+      - "127.0.0.1:${GITEA_PORT:-3300}:3000"
+      - "127.0.0.1:${GITEA_SSH_PORT:-2222}:22"
+    networks: [odysseus]
+
+  # ── NEXTCLOUD — Dateien/Sync (AGPL) ────────────────────────────────
+  nextcloud:
+    image: nextcloud:29-apache
+    restart: unless-stopped
+    environment:
+      SQLITE_DATABASE: nextcloud
+      NEXTCLOUD_ADMIN_USER: ${ADMIN_USER:-odysseus}
+      NEXTCLOUD_ADMIN_PASSWORD: ${ADMIN_PASS:?setze ADMIN_PASS in .env}
+      NEXTCLOUD_TRUSTED_DOMAINS: 127.0.0.1 localhost
+    volumes:
+      - nextcloud-data:/var/www/html
+    ports:
+      - "127.0.0.1:${NEXTCLOUD_PORT:-8081}:80"
+    networks: [odysseus]
+
+  # ── IMMICH — Foto-Oberflaeche (AGPL) ───────────────────────────────
+  # Schlanke Variante ohne Machine-Learning (geschlossenes System).
+  immich:
+    image: ghcr.io/immich-app/immich-server:release
+    restart: unless-stopped
+    environment:
+      DB_HOSTNAME: immich-db
+      DB_USERNAME: immich
+      DB_PASSWORD: ${IMMICH_DB_PASS:-immich}
+      DB_DATABASE_NAME: immich
+      REDIS_HOSTNAME: immich-redis
+      IMMICH_MACHINE_LEARNING_ENABLED: "false"
+    volumes:
+      - immich-upload:/usr/src/app/upload
+      # Nextcloud-Fotos direkt in Immich sichtbar (read-only External Library):
+      - nextcloud-data:/mnt/nextcloud:ro
+    ports:
+      - "127.0.0.1:${IMMICH_PORT:-2283}:2283"
+    depends_on: [immich-db, immich-redis]
+    networks: [odysseus]
+
+  immich-db:
+    image: ghcr.io/immich-app/postgres:16-vectorchord0.4.3
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: immich
+      POSTGRES_PASSWORD: ${IMMICH_DB_PASS:-immich}
+      POSTGRES_DB: immich
+    volumes:
+      - immich-pgdata:/var/lib/postgresql/data
+    networks: [odysseus]
+
+  immich-redis:
+    image: valkey/valkey:8   # BSD, Redis-kompatibel & lizenzfrei
+    restart: unless-stopped
+    networks: [odysseus]
+
+  # ── LIBRECHAT — nanoChat-Backend (MIT) ─────────────────────────────
+  # Chat-UI + API; Agenten reden hierueber (nanochat.sh) miteinander (A2A).
+  librechat:
+    image: ghcr.io/danny-avila/librechat:latest
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: "3080"
+      MONGO_URI: mongodb://librechat-mongo:27017/LibreChat
+      # Endpunkte: lokale Modelle (Ollama auf dem Host) oder eigene Keys
+      # aus dem VAULT — siehe scripts/vault.sh
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      ALLOW_REGISTRATION: "true"                       # nach Setup: false
+      JWT_SECRET: ${JWT_SECRET:-odysseus-change-me}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-odysseus-change-me-2}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./config/librechat.yaml:/app/librechat.yaml:ro
+    ports:
+      - "127.0.0.1:${LIBRECHAT_PORT:-3080}:3080"
+    depends_on: [librechat-mongo]
+    networks: [odysseus]
+
+  librechat-mongo:
+    image: mongo:7
+    restart: unless-stopped
+    command: mongod --noauth --bind_ip_all
+    volumes:
+      - librechat-mongo:/data/db
+    networks: [odysseus]
+
+  # ── ATUIN — Shell-History/Log-Sync fuer ALLE Agenten (MIT) ─────────
+  atuin:
+    image: ghcr.io/atuinsh/atuin:latest
+    restart: unless-stopped
+    command: server start
+    environment:
+      ATUIN_HOST: 0.0.0.0
+      ATUIN_PORT: "8888"
+      ATUIN_OPEN_REGISTRATION: "true"                  # nach Setup: false
+      ATUIN_DB_URI: postgres://atuin:${ATUIN_DB_PASS:-atuin}@atuin-db/atuin
+    ports:
+      - "127.0.0.1:${ATUIN_PORT:-8888}:8888"
+    depends_on: [atuin-db]
+    networks: [odysseus]
+
+  atuin-db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: atuin
+      POSTGRES_PASSWORD: ${ATUIN_DB_PASS:-atuin}
+      POSTGRES_DB: atuin
+    volumes:
+      - atuin-pgdata:/var/lib/postgresql/data
+    networks: [odysseus]
+
+  # ── VOICEBOX — Piper TTS (MIT), Wyoming-Protokoll ──────────────────
+  voicebox:
+    image: rhasspy/wyoming-piper:latest
+    restart: unless-stopped
+    command: --voice ${VOICE_MODEL:-de_DE-thorsten-medium}
+    volumes:
+      - voice-data:/data
+    ports:
+      - "127.0.0.1:${VOICE_PORT:-10200}:10200"
+    networks: [odysseus]
+
+  # ── VAULT — KeePass-Datenbank fuer Agenten-Zugangsdaten ────────────
+  # Kein Daemon: haelt das Volume + keepassxc-cli bereit.
+  # Zugriff aus Panes/Skripten:  scripts/vault.sh get <eintrag>
+  vault:
+    build:
+      context: .
+      dockerfile: config/vault.Dockerfile
+    restart: unless-stopped
+    command: sleep infinity
+    volumes:
+      - vault-data:/vault
+    environment:
+      KDBX_PATH: /vault/odysseus.kdbx
+    networks: [odysseus]

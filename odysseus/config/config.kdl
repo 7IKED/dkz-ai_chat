@@ -1,0 +1,24 @@
+// ODYSSEUS // Zellij-Config — Cosmo-Standard (Matrix schwarz/neon-gruen)
+theme "cosmo-matrix"
+default_layout "odysseus"
+pane_frames true
+mouse_mode true
+copy_on_select true
+scroll_buffer_size 20000
+on_force_close "detach"
+
+themes {
+    cosmo-matrix {
+        fg      "#00FF41"
+        bg      "#050a05"
+        black   "#000000"
+        red     "#ff3333"
+        green   "#00FF41"
+        yellow  "#ffb000"
+        blue    "#008F11"
+        magenta "#39FF14"
+        cyan    "#008F11"
+        white   "#e5e7eb"
+        orange  "#ffb000"
+    }
+}
