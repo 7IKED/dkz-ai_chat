@@ -2,3 +2,6 @@ node_modules/
 .DS_Store
 *.log
 .env
+
+# Liefer-Artefakte (Patches an den Nutzer, nicht versionieren)
+*.patch
