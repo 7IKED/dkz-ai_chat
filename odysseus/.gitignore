@@ -6,3 +6,9 @@ data/
 exe/payload.tar.gz
 exe/dist/
 exe/go.sum
+
+# Geklonte Skill-Packs (extern) — nur Registry + eigener Skill werden committet
+skills/packs/
+
+# Generierte FLOWS-Uebersichten
+skills/FLOWS.md

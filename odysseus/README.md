@@ -98,6 +98,25 @@ Eine Datei = komplettes System: entpackt sich nach `C:\DEVKiTZ\odysseus` (Window
 
 > Getestet: beide Binaries real gebaut (Go, nur Stdlib, MIT); Linux-Binary end-to-end verifiziert (Entpacken → Launcher ausführbar → .env erzeugt → Stack-Start).
 
+## 🧠 Skill-System (Repo/YouTube → Skills + Workflows)
+
+Ein Link genügt — Odysseus übernimmt alle Skills und erzeugt sofort nutzbare Workflows.
+
+```bash
+odysseus skills https://github.com/obra/superpowers   # Repo → Skills + FLOWS.md
+odysseus skills https://youtu.be/1jE7rCvByHg          # YouTube → Skill-Gerüst + FLOWS
+odysseus skills --pack obsidian-skills                 # aus der Registry
+odysseus skills --all-registry                         # alle 43 Packs
+odysseus skills --link /pfad/zu/devkitz-workspace      # lokales Verzeichnis filtern
+odysseus skills --list                                 # was ist installiert
+```
+
+Jede `SKILL.md` wird **kollisionssicher** (Pack-Prefix bei Namensgleichheit) nach `~/.claude/skills/` verlinkt; pro Pack entsteht eine **`FLOWS.md`** mit 3-Schritt-Workflows je Skill. Der gleichnamige Skill [`import-skills`](skills/import-skills/SKILL.md) macht das aus dem Chat heraus (`/import-skills <url>`) und koppelt an `writing-great-skills` (Skill-Builder) aus `7IKED/skills`.
+
+**Registry:** [`skills/registry/packs.tsv`](skills/registry/packs.tsv) — **43 per GitHub-API verifizierte Packs**: superpowers (+lab/skills), anthropics/skills, Matt Pocock, beastmode, Trail-of-Bits-Security (7 Security-Packs), Obsidian (3), llm-wiki (2), DevOps/SRE (5), Data-Science/Science (5), SEO/Marketing (5), YouTube/Video (3), Mobile/Frontend, Anti-Slop-Writing (3), u.a.
+
+**DEVKITZ-Filter:** Dein `7IKED/devkitz-workspace` klonen und `odysseus skills --link <pfad>` — alle dortigen `SKILL.md` werden gefiltert übernommen (Duplikate durch Pack-Prefix entschärft), sodass die „überall brauchbaren" Skills einheitlich unter `~/.claude/skills/` landen. Der Workflow-Builder (`FLOWS.md`) und der Skill-Builder (`writing-great-skills`) sind so verbunden.
+
 ## 📁 Struktur
 
 ```
@@ -107,7 +126,8 @@ odysseus/
 ├── .env.example            # Vorlage (→ .env, nie committet)
 ├── config/                 # zellij-config · librechat.yaml · vault.Dockerfile
 ├── layouts/odysseus.kdl    # Matrix-Terminal (BRIDGE·BROWSER·GITEA·LOGS)
-├── scripts/                # vault · nanochat(A2A) · voice · browser · gitea-init · ctl
+├── scripts/                # vault · nanochat(A2A) · voice · browser · gitea-init · ctl · skill-import
+├── skills/                 # import-skills Skill · registry/packs.tsv (43 Packs) · packs/ (Cache)
 ├── install.sh / install.ps1  # Linux · Windows (C:\DEVKiTZ\odysseus)
 └── exe/                    # Version 3: main.go + build-exe.sh → dist/
 ```

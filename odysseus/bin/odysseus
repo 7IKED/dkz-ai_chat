@@ -7,6 +7,7 @@
 #  odysseus status     Systemstatus
 #  odysseus init       Gitea einrichten (Admin/Org/Repo) + Repo pushen
 #  odysseus vault ...  Agenten-Vault (vault.sh)
+#  odysseus skills ... Skill-Import (Repo/YouTube-Link → Skills+Workflows)
 #  odysseus say "..."  Voicebox
 set -uo pipefail
 SOURCE="${BASH_SOURCE[0]}"
@@ -24,6 +25,7 @@ case "${1:-terminal}" in
     up|down|status|logs) "$ODYSSEUS_DIR/scripts/odysseus-ctl.sh" "$1";;
     init)   "$ODYSSEUS_DIR/scripts/gitea-init.sh" setup && "$ODYSSEUS_DIR/scripts/gitea-init.sh" push;;
     vault)  shift; "$ODYSSEUS_DIR/scripts/vault.sh" "$@";;
+    skills) shift; "$ODYSSEUS_DIR/scripts/skill-import.sh" "$@";;
     chat)   shift; "$ODYSSEUS_DIR/scripts/nanochat.sh" "$@";;
     say)    shift; "$ODYSSEUS_DIR/scripts/voice.sh" "$@";;
     browse) shift; "$ODYSSEUS_DIR/scripts/browser.sh" "$@";;
