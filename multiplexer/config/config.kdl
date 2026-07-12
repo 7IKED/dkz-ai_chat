@@ -54,11 +54,12 @@ themes {
 // ─────────────────────────────────────────────────────────────────────
 keybinds {
     shared_except "locked" {
-        // Schnell zwischen Cosmo-Profilen wechseln (neue Tabs mit Layout)
-        bind "Alt 1" { NewTab { layout "desktop"; }; }
-        bind "Alt 2" { NewTab { layout "vps";     }; }
-        bind "Alt 3" { NewTab { layout "agent";   }; }
-        bind "Alt 4" { NewTab { layout "builder"; }; }
-        bind "Alt 5" { NewTab { layout "monitor"; }; }
+        // Schnell zwischen Cosmo-Profilen wechseln (neuer Tab mit Profil-Ansicht).
+        // NewTab kann nur Einzel-Tab-Layouts laden → *-tab.kdl Varianten.
+        bind "Alt 1" { NewTab { layout "desktop-tab"; name "HAUPTDECK"; }; }
+        bind "Alt 2" { NewTab { layout "vps-tab";     name "SERVER";    }; }
+        bind "Alt 3" { NewTab { layout "agent-tab";   name "AGENTEN";   }; }
+        bind "Alt 4" { NewTab { layout "builder-tab"; name "BUILDER";   }; }
+        bind "Alt 5" { NewTab { layout "monitor-tab"; name "MONITOR";   }; }
     }
 }

@@ -10,10 +10,12 @@ ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-256color \
     EDITOR=nano
 
-# Basis-Tools + Multiplexer-Umfeld (Monitor/Netz/SSH/Git)
+# Basis-Tools + Multiplexer-Umfeld (Monitor/Netz/SSH/Git) + Zsh-Setup-Tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates curl tar bash git openssh-client \
         htop procps iproute2 nano less watch \
+        zsh fzf zoxide bat ripgrep \
+    && (apt-get install -y --no-install-recommends eza || true) \
     && rm -rf /var/lib/apt/lists/*
 
 # Zellij statisches Binary holen (arch-aware)
@@ -36,8 +38,13 @@ RUN set -eux; \
     mkdir -p /root/.config/zellij/layouts; \
     ln -sf /opt/cosmo/config/config.kdl /root/.config/zellij/config.kdl; \
     for l in /opt/cosmo/layouts/*.kdl; do ln -sf "$l" "/root/.config/zellij/layouts/$(basename "$l")"; done; \
-    chmod +x /opt/cosmo/bin/cosmo /opt/cosmo/scripts/*.sh /opt/cosmo/docker/entrypoint.sh; \
-    ln -sf /opt/cosmo/bin/cosmo /usr/local/bin/cosmo
+    chmod +x /opt/cosmo/bin/cosmo /opt/cosmo/scripts/*.sh /opt/cosmo/shell/install-shell.sh /opt/cosmo/docker/entrypoint.sh; \
+    ln -sf /opt/cosmo/bin/cosmo /usr/local/bin/cosmo; \
+    # Perfect Zsh Setup aktivieren (Pakete sind schon installiert)
+    ln -sf /opt/cosmo/shell/zshrc /root/.zshrc
+
+# Zellij startet Panes mit $SHELL → Zsh als Standard im Container
+ENV SHELL=/usr/bin/zsh
 
 WORKDIR /work
 ENTRYPOINT ["/opt/cosmo/docker/entrypoint.sh"]

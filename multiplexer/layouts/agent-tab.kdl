@@ -1,0 +1,25 @@
+// COSMO // agent als Einzel-Tab (fuer Alt+3 NewTab-Shortcut)
+layout {
+    pane split_direction="horizontal" {
+        pane size="55%" split_direction="vertical" {
+            pane size="30%" name="DIRIGENT" {
+                command "bash"
+                args "-lc" "${COSMO_MUX_DIR:-.}/scripts/agent-ctl.sh status; exec bash"
+            }
+            pane name="AGENT-RUNNER" focus=true {
+                command "bash"
+                args "-lc" "${COSMO_AGENT_CMD:-bash}"
+            }
+        }
+        pane split_direction="vertical" {
+            pane name="nanoCHAT" {
+                command "bash"
+                args "-lc" "echo '[SYSTEM] nanoChat Socket bereit. pi-agent verbunden.'; exec bash"
+            }
+            pane name="WEBHOOKS" {
+                command "bash"
+                args "-lc" "${COSMO_MUX_DIR:-.}/scripts/agent-ctl.sh webhooks; exec bash"
+            }
+        }
+    }
+}

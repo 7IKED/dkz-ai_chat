@@ -1,0 +1,64 @@
+# COSMO_V2 // Starship-Prompt — Matrix Theme
+# Aktiv wenn `starship` installiert ist (zshrc setzt STARSHIP_CONFIG hierher).
+# Farben: #00FF41 matrix-green · #008F11 matrix-dim · #39FF14 neon · #ffb000 warn
+
+format = """
+[┌─\\[](fg:#008F11)$username[@](fg:#008F11)$hostname[\\]](fg:#008F11) $directory$git_branch$git_status$nodejs$rust$python$docker_context
+[└─](fg:#008F11)$character"""
+
+add_newline = true
+
+[username]
+show_always = true
+style_user = "fg:#00FF41"
+style_root = "fg:#ffb000 bold"
+format = "[$user]($style)"
+
+[hostname]
+ssh_only = false
+style = "fg:#00FF41"
+format = "[$hostname]($style)"
+
+[directory]
+style = "fg:#00FF41 bold"
+truncation_length = 4
+truncate_to_repo = true
+format = "[$path]($style) "
+
+[git_branch]
+symbol = " "
+style = "fg:#39FF14"
+format = "[(\\($symbol$branch\\))]($style) "
+
+[git_status]
+style = "fg:#ffb000"
+format = "([$all_status$ahead_behind]($style) )"
+
+[character]
+success_symbol = "[▶](fg:#00FF41)"
+error_symbol = "[▶](fg:#ff3333)"
+
+[nodejs]
+symbol = "⬢ "
+style = "fg:#008F11"
+format = "[$symbol$version]($style) "
+
+[rust]
+symbol = "🦀 "
+style = "fg:#008F11"
+format = "[$symbol$version]($style) "
+
+[python]
+symbol = "🐍 "
+style = "fg:#008F11"
+format = "[$symbol$version]($style) "
+
+[docker_context]
+symbol = "🐳 "
+style = "fg:#008F11"
+format = "[$symbol$context]($style) "
+
+[cmd_duration]
+min_time = 2000
+style = "fg:#008F11"
+format = "[took $duration]($style) "

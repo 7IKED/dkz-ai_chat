@@ -44,7 +44,8 @@ dkz-ai_chat/
 ├── index.html          # Hauptseite
 ├── style.css           # Modul-spezifische Styles
 ├── *.js                # Logik
-├── multiplexer/        # 🖥️ Cosmo Multiplexer Umgebung (Zellij)
+├── multiplexer/        # 🖥️ Cosmo Multiplexer Umgebung (Zellij + Zsh)
+├── prototypes/         # 🟢 Matrix-Terminal-Prototypen (HTML, Galerie: index.html)
 └── README.md           # Diese Datei
 ```
 
@@ -60,7 +61,11 @@ cd multiplexer && ./install.sh     # Linux/macOS/WSL
 cosmo desktop                       # oder: agent · builder · vps · monitor
 ```
 
-→ Details in [`multiplexer/README.md`](multiplexer/README.md).
+→ Details in [`multiplexer/README.md`](multiplexer/README.md) · Schritt-für-Schritt: [`TUTORIAL.md`](TUTORIAL.md)
+
+Dazu gehören:
+- **Perfect Zsh Setup** (`multiplexer/shell/`) — zinit, Autosuggestions, Syntax-Highlighting, fzf-tab, zoxide, eza, Matrix-Prompt (Starship-Config + Fallback)
+- **Prototypen-Galerie** (`prototypes/index.html`) — die 5 Matrix-HTML-Prototypen, aus denen die Terminal-Umgebung entstand
 
 ## 🔗 Teil des DEVKiTZ™ Ecosystem
 

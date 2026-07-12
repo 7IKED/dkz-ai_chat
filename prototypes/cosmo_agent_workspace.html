@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmo V2 // Agent Workspace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --matrix-black: #000000;
+            --matrix-dark: #050a05;
+            --matrix-green: #00FF41;
+            --matrix-dim: #008F11;
+            --matrix-glow: 0 0 10px rgba(0, 255, 65, 0.4);
+            --matrix-warn: #ffb000;
+            --matrix-red: #ff3333;
+        }
+
+        body {
+            background-color: var(--matrix-black);
+            color: var(--matrix-green);
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Scanlines Overlay */
+        .scanlines::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .pane-border {
+            border: 1px solid var(--matrix-dim);
+            background-color: rgba(5, 10, 5, 0.85);
+            box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.02);
+            position: relative;
+        }
+
+        .pane-border.active {
+            border-color: var(--matrix-green);
+            box-shadow: inset 0 0 30px rgba(0, 255, 65, 0.05), 0 0 10px rgba(0, 255, 65, 0.1);
+        }
+
+        .pane-title {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background-color: var(--matrix-black);
+            padding: 0 10px;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--matrix-green);
+            text-shadow: var(--matrix-glow);
+            letter-spacing: 1px;
+            z-index: 10;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: var(--matrix-black); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--matrix-dim); }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--matrix-green); }
+
+        input.terminal-input {
+            background: transparent;
+            border: none;
+            color: var(--matrix-green);
+            font-family: inherit;
+            outline: none;
+            width: 100%;
+            text-shadow: var(--matrix-glow);
+        }
+
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        .glow-text { text-shadow: var(--matrix-glow); }
+        
+        /* Keras Progress Bar */
+        .keras-progress {
+            background: repeating-linear-gradient(
+                45deg,
+                var(--matrix-dim),
+                var(--matrix-dim) 10px,
+                var(--matrix-black) 10px,
+                var(--matrix-black) 20px
+            );
+            background-size: 28px 28px;
+            animation: moveProgress 2s linear infinite;
+        }
+        @keyframes moveProgress { 0% { background-position: 0 0; } 100% { background-position: 28px 0; } }
+    </style>
+</head>
+<body class="h-screen w-screen p-2 sm:p-4 scanlines flex flex-col items-center justify-center">
+
+    <!-- HEADR (Global Top Bar) -->
+    <div class="w-full max-w-7xl border border-[#008F11] bg-[#020502] px-4 py-2 flex justify-between items-center z-50 mb-2 shadow-[0_0_15px_rgba(0,255,65,0.1)]">
+        <div class="flex items-center space-x-4">
+            <span class="font-bold tracking-widest glow-text">HEADR // ORCHESTRATOR</span>
+            <span class="text-xs bg-[#00FF41] text-black px-2 py-0.5 font-bold">DIRIGENT ONLINE</span>
+        </div>
+        <div class="flex space-x-6 text-xs text-[#008F11]">
+            <span>A2A_TRAFFIC: <span id="a2a-val" class="text-[#00FF41]">42.5 MB/s</span></span>
+            <span>A2G_UPLINK: <span id="a2g-val" class="text-[#00FF41]">ESTABLISHED</span></span>
+            <span>SWARM_STATUS: <span class="text-[#00FF41] blink">NOMINAL</span></span>
+        </div>
+    </div>
+
+    <!-- Main Workspace Grid -->
+    <div class="w-full max-w-7xl flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 z-10 relative">
+
+        <!-- LEFT PANE: DIRIGENT & NANO-CLAW -->
+        <div class="md:col-span-3 flex flex-col gap-3">
+            <div class="pane-border active flex-1 p-4 flex flex-col">
+                <div class="pane-title">DIRIGENT // CONTROL</div>
+                <div class="mt-4 text-xs space-y-4">
+                    <div class="border-b border-[#008F11] border-dashed pb-2">
+                        <div class="flex justify-between glow-text mb-1"><span>Target:</span><span>Nano-claw</span></div>
+                        <div class="flex justify-between text-[#008F11]"><span>Status:</span><span class="text-[#00FF41]">ENGAGED</span></div>
+                        <div class="flex justify-between text-[#008F11]"><span>Precision:</span><span>99.98%</span></div>
+                    </div>
+                    
+                    <div>
+                        <div class="glow-text mb-2">AUTONOME AGENTEN</div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[#008F11]">nanobot_swarm</span>
+                            <span class="bg-[#008F11] text-black px-1 text-[10px]">ACTIVE (1024)</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[#008F11]">pi-agent (Assist)</span>
+                            <span class="bg-[#00FF41] text-black px-1 text-[10px] blink">LISTENING</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[#008F11]">scraper_bot</span>
+                            <span class="border border-[#008F11] text-[#008F11] px-1 text-[10px]">IDLE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAPERLESS-NGX MODULE -->
+            <div class="pane-border h-48 p-4 flex flex-col">
+                <div class="pane-title">PAPERLESS-NGX</div>
+                <div class="mt-4 flex-1 flex flex-col justify-center space-y-2 text-xs">
+                    <div class="flex items-center text-[#008F11]"><span class="w-2 h-2 bg-[#00FF41] rounded-full mr-2"></span> OCR Engine Queue:</div>
+                    <div class="font-mono text-gray-400 pl-4">> ingest_invoice_042.pdf</div>
+                    <div class="font-mono text-[#00FF41] pl-4 blink">> processing tensor_data.csv</div>
+                    <div class="font-mono text-gray-500 pl-4">> archiving ...</div>
+                    <div class="mt-2 text-right text-[10px] text-[#008F11]">Docs Parsed: <span id="doc-count">14,021</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER PANE: SWARM VISUALIZATION -->
+        <div class="md:col-span-6 pane-border p-2 flex flex-col relative">
+            <div class="pane-title">A2A SWARM VISUALIZER // NANOBOTS</div>
+            <!-- Canvas Overlay UI -->
+            <div class="absolute top-4 left-4 z-20 text-[10px] text-[#008F11] space-y-1 bg-black/50 p-1 border border-[#008F11]/30">
+                <div>MODE: AUTONOMOUS_HUNT</div>
+                <div>CLAW_SYNC: <span class="text-[#00FF41]">LOCKED</span></div>
+            </div>
+            <!-- Canvas -->
+            <canvas id="swarm-canvas" class="w-full h-full border border-[#008F11]/30 bg-[#020402] mt-2"></canvas>
+        </div>
+
+        <!-- RIGHT PANE: TOOLS & CONFIG -->
+        <div class="md:col-span-3 flex flex-col gap-3">
+            
+            <!-- KERAS / ML MODULE -->
+            <div class="pane-border h-32 p-4 flex flex-col">
+                <div class="pane-title">KERAS // DEEP LEARNING</div>
+                <div class="mt-4 text-xs space-y-2">
+                    <div class="flex justify-between"><span>Model:</span><span class="text-[#008F11]">nano_brain_v4.h5</span></div>
+                    <div class="flex justify-between"><span>Epoch:</span><span class="text-[#00FF41]" id="keras-epoch">42/100</span></div>
+                    <div class="flex justify-between"><span>Loss:</span><span class="text-[#008F11]" id="keras-loss">0.0314</span></div>
+                    <div class="h-1.5 w-full bg-black border border-[#008F11] mt-1 overflow-hidden">
+                        <div class="h-full keras-progress w-[42%]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ATUIN HISTORY SYNC -->
+            <div class="pane-border h-24 p-4 flex flex-col justify-center">
+                <div class="pane-title">ATUIN // SHELL HISTORY</div>
+                <div class="mt-2 text-xs">
+                    <div class="flex items-center text-[#008F11] mb-1">
+                        <svg class="w-3 h-3 mr-2 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        Syncing Nodes...
+                    </div>
+                    <div class="text-[10px] text-gray-400">Total Commands: <span class="text-[#00FF41]">84,102</span></div>
+                    <div class="text-[10px] text-gray-400">Last: <span class="text-[#008F11]">`kubectl get pods -n ai`</span></div>
+                </div>
+            </div>
+
+            <!-- WEBHOOK CONFIG ONTHERUN -->
+            <div class="pane-border flex-1 p-4 flex flex-col">
+                <div class="pane-title">WEBHOOKS // ONTHERUN</div>
+                <div class="mt-3 flex-1 overflow-y-auto custom-scrollbar text-[10px] space-y-2" id="webhook-list">
+                    <div class="flex justify-between border-b border-[#008F11]/30 pb-1">
+                        <span class="text-gray-400">POST /api/slack_alert</span><span class="text-[#00FF41]">200 OK</span>
+                    </div>
+                    <div class="flex justify-between border-b border-[#008F11]/30 pb-1">
+                        <span class="text-gray-400">GET /a2g/sync_state</span><span class="text-[#00FF41]">200 OK</span>
+                    </div>
+                </div>
+                
+                <!-- Dynamic Input Field -->
+                <div class="mt-2 pt-2 border-t border-[#008F11] border-dashed">
+                    <div class="text-[9px] text-[#008F11] mb-1">ADD WEBHOOK (ON THE FLY):</div>
+                    <div class="flex bg-black border border-[#008F11] p-1">
+                        <span class="text-[#00FF41] text-xs mr-1">+</span>
+                        <input type="text" id="webhook-input" class="terminal-input text-xs" placeholder="https://endpoint...">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM PANE: NANOCHAT -->
+    <div class="w-full max-w-7xl pane-border h-48 mt-3 p-4 flex flex-col z-10">
+        <div class="pane-title">nanoChat // USER ASSISTANT (PI-AGENT)</div>
+        
+        <div class="flex-1 overflow-y-auto custom-scrollbar font-mono text-xs space-y-1 mb-2 mt-2 pr-2" id="chat-output">
+            <div class="text-[#008F11]">[SYSTEM] nanoChat Socket initialisiert. Verbindung zum pi-agent steht.</div>
+            <div class="mt-2 text-[#00FF41]"><span class="font-bold">pi-agent:</span> Hallo Operator. Der Nanobot-Schwarm und die Nano-claw sind einsatzbereit. Webhooks sind auf 'ontherun' konfiguriert. Was sind die nächsten Instruktionen?</div>
+        </div>
+        
+        <div class="flex items-center border-t border-[#008F11] border-dashed pt-2">
+            <span class="mr-2 glow-text font-bold text-xs text-white">Operator:~$</span>
+            <input type="text" id="chat-input" class="terminal-input text-xs" autocomplete="off" spellcheck="false" placeholder="Befehl an pi-agent eingeben...">
+        </div>
+    </div>
+
+    <script>
+        // --- 1. SWARM VISUALIZATION (CANVAS) ---
+        const canvas = document.getElementById('swarm-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth - 4; // padding adj
+            canvas.height = canvas.parentElement.clientHeight - 20; // top padding adj
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Particles (Nanobots)
+        const bots = [];
+        const numBots = 60;
+        for(let i=0; i<numBots; i++) {
+            bots.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: (Math.random() - 0.5) * 1.5,
+                size: Math.random() * 1.5 + 0.5
+            });
+        }
+
+        // The "Nano-claw" Target
+        let claw = { x: canvas.width/2, y: canvas.height/2, tx: canvas.width/2, ty: canvas.height/2 };
+
+        // Change claw target randomly
+        setInterval(() => {
+            claw.tx = 50 + Math.random() * (canvas.width - 100);
+            claw.ty = 50 + Math.random() * (canvas.height - 100);
+        }, 3000);
+
+        function drawSwarm() {
+            ctx.fillStyle = 'rgba(2, 4, 2, 0.3)'; // Trail effect
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Move Claw smoothly towards target
+            claw.x += (claw.tx - claw.x) * 0.02;
+            claw.y += (claw.ty - claw.y) * 0.02;
+
+            // Draw Nano-claw (Dirigent focal point)
+            ctx.beginPath();
+            ctx.arc(claw.x, claw.y, 10, 0, Math.PI*2);
+            ctx.strokeStyle = '#00FF41';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(claw.x, claw.y, 4, 0, Math.PI*2);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+
+            // Draw & Update Bots
+            ctx.fillStyle = '#00FF41';
+            bots.forEach(b => {
+                // Bots are slightly attracted to the claw (Dirigent's command)
+                const dx = claw.x - b.x;
+                const dy = claw.y - b.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                if (dist > 20) {
+                    b.vx += (dx / dist) * 0.02; // Pull force
+                    b.vy += (dy / dist) * 0.02;
+                }
+
+                // Add friction/speed limit
+                b.vx *= 0.98;
+                b.vy *= 0.98;
+
+                b.x += b.vx;
+                b.y += b.vy;
+
+                // Draw Bot
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.size, 0, Math.PI*2);
+                ctx.fill();
+
+                // Draw A2A Network Lines if close to claw or other bots
+                if (dist < 80) {
+                    ctx.beginPath();
+                    ctx.moveTo(b.x, b.y);
+                    ctx.lineTo(claw.x, claw.y);
+                    ctx.strokeStyle = `rgba(0, 255, 65, ${1 - dist/80})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            });
+
+            requestAnimationFrame(drawSwarm);
+        }
+        drawSwarm();
+
+
+        // --- 2. DYNAMIC SIMULATIONS (Keras, Traffic, Paperless) ---
+        let epoch = 42;
+        let loss = 0.0314;
+        let docs = 14021;
+        
+        setInterval(() => {
+            // A2A / A2G Simulation
+            document.getElementById('a2a-val').innerText = (Math.random() * 50 + 20).toFixed(1) + ' MB/s';
+            
+            // Keras Training Simulation
+            if (Math.random() > 0.5) {
+                epoch = epoch < 100 ? epoch + 1 : 1;
+                loss = loss > 0.001 ? loss * 0.98 : 0.0314;
+                document.getElementById('keras-epoch').innerText = `${epoch}/100`;
+                document.getElementById('keras-loss').innerText = loss.toFixed(4);
+            }
+
+            // Paperless Doc Counter
+            if (Math.random() > 0.7) {
+                docs++;
+                document.getElementById('doc-count').innerText = docs.toLocaleString();
+            }
+        }, 1500);
+
+
+        // --- 3. NANOCHAT (User Assistant) LOGIC ---
+        const chatInput = document.getElementById('chat-input');
+        const chatOutput = document.getElementById('chat-output');
+
+        function printChat(sender, msg, colorClass) {
+            const div = document.createElement('div');
+            div.className = `mt-1 ${colorClass}`;
+            div.innerHTML = `<span class="font-bold">${sender}:</span> ${msg}`;
+            chatOutput.appendChild(div);
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+        }
+
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && this.value.trim() !== '') {
+                const userMsg = this.value;
+                printChat("Operator", userMsg, "text-white");
+                this.value = ''; // clear input
+
+                // Simulated pi-agent response
+                setTimeout(() => {
+                    const responses = [
+                        "Befehl erhalten. Leite A2A Protokoll an Nanobot-Schwarm weiter.",
+                        "Analysiere Anfrage über Keras Core... Wahrscheinlichkeit für Erfolg liegt bei 99.8%.",
+                        "Dirigent bestätigt: Nano-claw wurde auf neues Ziel ausgerichtet.",
+                        "Ich habe die Daten über Paperless-ngx indexiert. Sie stehen jetzt bereit.",
+                        "Ontherun Webhook wurde erfolgreich in die API Route injiziert."
+                    ];
+                    const reply = responses[Math.floor(Math.random() * responses.length)];
+                    printChat("pi-agent", reply, "text-[#00FF41]");
+                }, 800 + Math.random() * 1000); // 0.8s - 1.8s delay
+            }
+        });
+
+
+        // --- 4. WEBHOOKS ONTHERUN LOGIC ---
+        const webhookInput = document.getElementById('webhook-input');
+        const webhookList = document.getElementById('webhook-list');
+
+        webhookInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && this.value.trim() !== '') {
+                const url = this.value;
+                this.value = ''; // clear
+
+                // Add to list dynamically
+                const div = document.createElement('div');
+                div.className = "flex justify-between border-b border-[#008F11]/30 pb-1 text-[#00FF41] blink";
+                div.innerHTML = `<span class="text-white">HOOK ${url}</span><span>DEPLOYED</span>`;
+                
+                webhookList.prepend(div);
+                
+                // Stop blinking after 2 seconds
+                setTimeout(() => {
+                    div.classList.remove('blink', 'text-[#00FF41]');
+                    div.classList.add('text-gray-400');
+                    div.innerHTML = `<span class="text-gray-400">HOOK ${url}</span><span class="text-[#00FF41]">ACTIVE</span>`;
+                }, 2000);
+            }
+        });
+
+    </script>
+</body>
+</html>

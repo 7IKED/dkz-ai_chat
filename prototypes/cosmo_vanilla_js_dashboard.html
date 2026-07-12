@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmo Zellij Dashboard V2 (Vanilla JS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #000; color: #39FF14; font-family: monospace; }
+        .pane-bg { background-color: #111111; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0a0a0a; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; border: 1px solid #111; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #39FF14; border-color: #000; }
+        
+        /* CRT Overlay */
+        .crt-overlay::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(255,255,255,0) 50%, rgba(0,0,0,1) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            opacity: 0.05;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-4">
+
+    <!-- Terminal Container -->
+    <div class="w-full max-w-7xl h-[90vh] rounded-lg overflow-hidden flex flex-col shadow-[0_0_50px_rgba(57,255,20,0.05)] relative crt-overlay" style="background-color: #0a0a0a; border: 1px solid #39FF14;">
+        
+        <!-- Prototype Watermark -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-8xl font-bold text-white opacity-[0.02] pointer-events-none select-none tracking-widest z-0 rotate-12">
+            PROTOTYPE
+        </div>
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-800 bg-[#050505] z-30">
+            <div class="flex space-x-2">
+                <div class="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-500 shadow-[0_0_5px_rgba(234,179,8,0.5)]"></div>
+                <div class="w-3 h-3 rounded-full bg-[#39FF14] shadow-[0_0_5px_rgba(57,255,20,0.5)]"></div>
+            </div>
+            
+            <div class="flex items-center space-x-2 text-xs bg-[#0a0a0a] p-1 rounded-md border border-gray-800" id="profile-selector">
+                <span class="text-gray-500 ml-1">👤</span>
+                <button onclick="setProfile('home')" id="btn-prof-home" class="px-3 py-1 rounded transition-colors bg-[#1a2e1a] text-[#39FF14] font-bold">🏠 Home</button>
+                <button onclick="setProfile('dev')" id="btn-prof-dev" class="px-3 py-1 rounded transition-colors text-gray-500 hover:text-gray-300">👨‍💻 DevOps</button>
+                <button onclick="setProfile('sec')" id="btn-prof-sec" class="px-3 py-1 rounded transition-colors text-gray-500 hover:text-gray-300">🛡️ Security</button>
+            </div>
+
+            <div class="text-[#39FF14] text-xs font-bold tracking-wider flex items-center opacity-80">
+                COSMO_V2 (JS) <span class="ml-2 animate-[pulse_2s_infinite]">📻</span>
+            </div>
+        </div>
+
+        <!-- Tab & Template Bar -->
+        <div class="flex text-sm bg-[#0a0a0a] border-b border-gray-800 justify-between items-center pr-4 z-30">
+            <div class="flex">
+                <div class="px-6 py-2 flex items-center border-b-2 bg-[#1a2e1a] text-[#39FF14] border-[#39FF14] font-bold shadow-[inset_0_-2px_4px_rgba(57,255,20,0.2)]">
+                    Workspace 1
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-1 text-xs bg-black p-1 rounded border border-gray-800">
+                <span class="text-gray-600 px-2 font-bold tracking-widest">VIEW</span>
+                <button onclick="setLayout('split')" id="btn-lay-split" class="p-1.5 rounded transition-all text-black bg-[#39FF14] shadow-[0_0_8px_rgba(57,255,20,0.4)]">SPLIT</button>
+                <button onclick="setLayout('grid')" id="btn-lay-grid" class="p-1.5 rounded transition-all text-gray-500 hover:text-white">GRID</button>
+                <button onclick="setLayout('focus')" id="btn-lay-focus" class="p-1.5 rounded transition-all text-gray-500 hover:text-white">FOCUS</button>
+            </div>
+        </div>
+
+        <!-- Workspace Container -->
+        <div class="flex-1 p-3 bg-black overflow-hidden z-20" id="workspace">
+            <!-- Panes werden per JS hier injiziert -->
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-[#050505] border-t border-gray-800 text-[10px] px-3 py-2 flex items-center space-x-6 z-30">
+            <div class="text-gray-600 tracking-widest font-bold">PURE_VANILLA_JS_BUILD</div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        const state = {
+            profile: 'home',
+            layout: 'split',
+            cpu: 24,
+            logs: ["[INIT] Starte Cosmo_V2 Native JS Build...", "[OK] DOM geladen."],
+            modules: ['sysmon', 'smarthome', 'weather', 'logs'], // Aktuelle Belegung der 4 Panes
+            activePane: 0
+        };
+
+        const profiles = {
+            home: ['sysmon', 'smarthome', 'weather', 'logs'],
+            dev: ['sysmon', 'logs', 'network', 'security'],
+            sec: ['security', 'network', 'logs', 'sysmon']
+        };
+
+        const availableModules = ['sysmon', 'smarthome', 'logs', 'network', 'weather', 'security'];
+
+        // Core Functions
+        function setProfile(prof) {
+            state.profile = prof;
+            state.modules = [...profiles[prof]];
+            document.querySelectorAll('#profile-selector button').forEach(b => {
+                b.className = "px-3 py-1 rounded transition-colors text-gray-500 hover:text-gray-300";
+            });
+            document.getElementById(`btn-prof-${prof}`).className = "px-3 py-1 rounded transition-colors bg-[#1a2e1a] text-[#39FF14] font-bold";
+            render();
+        }
+
+        function setLayout(lay) {
+            state.layout = lay;
+            ['split', 'grid', 'focus'].forEach(l => {
+                document.getElementById(`btn-lay-${l}`).className = "p-1.5 rounded transition-all text-gray-500 hover:text-white";
+            });
+            document.getElementById(`btn-lay-${lay}`).className = "p-1.5 rounded transition-all text-black bg-[#39FF14] shadow-[0_0_8px_rgba(57,255,20,0.4)]";
+            render();
+        }
+
+        function cycleModule(paneIndex, dir) {
+            let current = availableModules.indexOf(state.modules[paneIndex]);
+            let next = current + dir;
+            if(next >= availableModules.length) next = 0;
+            if(next < 0) next = availableModules.length - 1;
+            state.modules[paneIndex] = availableModules[next];
+            render();
+        }
+
+        function setActivePane(index) {
+            state.activePane = index;
+            render();
+        }
+
+        // Modul HTML Generatoren
+        function getSysMonHTML() {
+            return `
+                <div class="flex flex-col space-y-4 h-full justify-center">
+                    <div class="flex justify-between items-center border-b border-gray-800 pb-2">
+                        <span class="text-gray-400">OS</span><span class="text-[#39FF14]">Cosmo OS v2.6 (JS)</span>
+                    </div>
+                    <div class="mt-2">
+                        <div class="flex justify-between text-xs mb-1"><span class="text-gray-400">CPU</span><span class="text-[#39FF14]">${state.cpu}%</span></div>
+                        <div class="w-full bg-gray-800 h-2 rounded-full"><div class="bg-[#39FF14] h-full transition-all" style="width: ${state.cpu}%"></div></div>
+                    </div>
+                </div>`;
+        }
+
+        function getSmartHomeHTML() {
+            return `
+                <div class="grid grid-cols-2 gap-3 h-full content-start">
+                    <div class="border border-gray-700 p-3 rounded bg-[#151515] text-[#39FF14] text-xs font-bold">Licht<br><span class="text-gray-500 font-normal">Abendmodus</span></div>
+                    <div class="border border-gray-700 p-3 rounded bg-[#151515] text-gray-300 text-xs font-bold">Klima<br><span class="text-white text-lg font-light">21.5°C</span></div>
+                    <div class="border border-gray-700 p-3 rounded bg-[#151515] text-[#39FF14] text-xs font-bold">Küche<br><span class="text-[#39FF14] font-normal animate-pulse">> Brewing..</span></div>
+                    <div class="border border-gray-700 p-3 rounded bg-[#151515] text-gray-300 text-xs font-bold">Audio<br><span class="text-gray-500 font-normal">Playing...</span></div>
+                </div>`;
+        }
+
+        function getLogsHTML() {
+            let logsHtml = state.logs.map(l => `<div class="mb-1 text-gray-400">${l}</div>`).join('');
+            return `<div class="font-mono text-xs h-full flex flex-col bg-[#050505] p-2 rounded border border-gray-800">
+                        <div class="flex-1 overflow-y-auto custom-scrollbar" id="log-container">${logsHtml}</div>
+                        <div class="mt-2 text-[#39FF14] border-t border-gray-800 pt-2 opacity-80">cosmo@js:~$ █</div>
+                    </div>`;
+        }
+
+        // Render Funktion (Baut das DOM neu)
+        function render() {
+            const ws = document.getElementById('workspace');
+            let html = '';
+
+            const getPaneHTML = (index, flexStr) => {
+                const modType = state.modules[index];
+                const isActive = state.activePane === index;
+                const title = modType.toUpperCase() + "_MODUL";
+                
+                let content = '';
+                if(modType === 'sysmon') content = getSysMonHTML();
+                else if(modType === 'smarthome') content = getSmartHomeHTML();
+                else if(modType === 'logs') content = getLogsHTML();
+                else content = `<div class="text-center text-gray-500 mt-10">${title} (Placeholder)</div>`;
+
+                const borderClass = isActive ? 'border-[#39FF14] shadow-[0_0_12px_rgba(57,255,20,0.1)] scale-[1.01] z-10' : 'border-gray-800';
+                
+                return `
+                    <div onclick="setActivePane(${index})" class="relative flex flex-col rounded-md border transition-all duration-200 ${borderClass} pane-bg" style="flex: ${flexStr}; min-height: 150px;">
+                        <div class="absolute -top-3 left-4 bg-[#0a0a0a] px-3 flex items-center space-x-2 border border-gray-800 rounded z-20">
+                            ${isActive ? '<span class="w-2 h-2 rounded-full bg-[#39FF14] animate-pulse"></span>' : ''}
+                            <span class="text-[10px] font-bold tracking-widest ${isActive ? 'text-[#39FF14]' : 'text-gray-500'}">${title}</span>
+                            <div class="flex ml-2 border-l border-gray-700 pl-2">
+                                <button onclick="event.stopPropagation(); cycleModule(${index}, -1)" class="text-gray-500 hover:text-white px-1">&lt;</button>
+                                <button onclick="event.stopPropagation(); cycleModule(${index}, 1)" class="text-gray-500 hover:text-white px-1">&gt;</button>
+                            </div>
+                        </div>
+                        <div class="p-4 pt-5 flex-1 overflow-auto text-sm text-gray-300">${content}</div>
+                    </div>`;
+            };
+
+            if (state.layout === 'split') {
+                html = `
+                <div class="flex flex-col md:flex-row h-full gap-2">
+                    <div class="w-full md:w-[35%] flex flex-col gap-3">${getPaneHTML(0, "1")}${getPaneHTML(1, "1")}</div>
+                    <div class="w-full md:w-[65%] flex flex-col gap-3">${getPaneHTML(2, "1.5")}${getPaneHTML(3, "1")}</div>
+                </div>`;
+            } else if (state.layout === 'grid') {
+                html = `<div class="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 h-full gap-2">${getPaneHTML(0, "1")}${getPaneHTML(1, "1")}${getPaneHTML(2, "1")}${getPaneHTML(3, "1")}</div>`;
+            } else if (state.layout === 'focus') {
+                html = `<div class="flex h-full w-full">${getPaneHTML(state.activePane, "1")}</div>`;
+            }
+
+            ws.innerHTML = html;
+
+            // Logs autoscroll
+            const logContainers = document.querySelectorAll('#log-container');
+            logContainers.forEach(c => c.scrollTop = c.scrollHeight);
+        }
+
+        // Data Simulation
+        setInterval(() => {
+            state.cpu = Math.max(5, Math.min(95, Math.floor(state.cpu + (Math.random() - 0.5) * 15)));
+            if(Math.random() > 0.6) {
+                state.logs.push(`[SYS] Tick: ${new Date().toLocaleTimeString()}`);
+                if(state.logs.length > 20) state.logs.shift();
+            }
+            render();
+        }, 2000);
+
+        // Initial Render
+        render();
+    </script>
+</body>
+</html>

@@ -142,6 +142,17 @@ Damit lassen sich CI-artige Pipelines lokal fahren und auswerten (grep/jq auf `s
 
 ---
 
+## 🐚 Perfect Zsh Setup
+
+Das Shell-Modul (`shell/`) setzt „The Perfect Zsh Setup For 2026" im Matrix-Look um — **zinit** als Plugin-Manager, **Autosuggestions** (Ghost-Text aus der History), **Syntax-Highlighting** (gültige Befehle grün, ungültige rot), **fzf-tab** (Tab-Vervollständigung als Fuzzy-Menü mit Verzeichnis-Preview), **zoxide** (`cd` lernt deine Verzeichnisse), **eza/bat/ripgrep**-Aliases und ein Matrix-Prompt (Starship-Config, mit reinem Zsh-Fallback).
+
+```bash
+multiplexer/shell/install-shell.sh     # Pakete + ~/.zshrc + Login-Shell
+zsh                                    # erster Start: zinit klont die Plugins
+```
+
+Alles defensiv: Fehlt ein Tool (starship, atuin, eza …), läuft die Shell trotzdem — inklusive eingebautem Ctrl+R/Ctrl+T-Fallback, falls die fzf-Distro-Keybindings fehlen. Im Docker-Image ist das Setup vorinstalliert (`SHELL=/usr/bin/zsh`).
+
 ## ⌨️ Tastenkürzel
 
 Zellij-Defaults plus Cosmo-Ergänzungen (siehe Statusleiste unten):
@@ -175,15 +186,22 @@ multiplexer/
 ├── themes/
 │   └── cosmo-matrix.kdl    # Theme separat (optional)
 ├── layouts/
-│   ├── desktop.kdl         # Profil 1
+│   ├── desktop.kdl         # Profil 1 (mehrere Tabs)
 │   ├── vps.kdl             # Profil 2
 │   ├── agent.kdl           # Profil 3
 │   ├── builder.kdl         # Profil 4
-│   └── monitor.kdl         # Profil 5
+│   ├── monitor.kdl         # Profil 5
+│   └── *-tab.kdl           # Einzel-Tab-Varianten (fuer Alt+1..5 Shortcuts)
 ├── scripts/
 │   ├── testlane.sh         # Teststrassen-Erfassung
 │   ├── vps-connect.sh      # SSH-Slot-Verbindung
 │   └── agent-ctl.sh        # Agent-Statuspanels
+├── shell/                  # 🐚 Perfect Zsh Setup (Matrix)
+│   ├── zshrc               # zinit · autosuggestions · syntax-hl · fzf-tab
+│   ├── aliases.zsh         # eza/bat/rg-Aliases + Cosmo-Kurzbefehle (cxa, cxb …)
+│   ├── cosmo-prompt.zsh    # Matrix-Prompt (Fallback ohne Starship)
+│   ├── starship.toml       # Starship-Prompt im Matrix-Theme
+│   └── install-shell.sh    # Installer (Pakete + ~/.zshrc + chsh)
 ├── docker/
 │   ├── Dockerfile
 │   ├── docker-compose.yml

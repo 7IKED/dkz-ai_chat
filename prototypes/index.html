@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COSMO_V2 // Prototypen-Galerie</title>
+    <style>
+        :root {
+            --m-black: #000000; --m-dark: #050a05;
+            --m-green: #00FF41; --m-dim: #008F11;
+            --m-neon: #39FF14;  --m-warn: #ffb000;
+            --m-glow: 0 0 10px rgba(0, 255, 65, 0.4);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; min-height: 100vh;
+            background: var(--m-black); color: var(--m-green);
+            font-family: 'Courier New', Courier, monospace;
+            padding: 24px; position: relative;
+        }
+        /* CRT Scanlines */
+        body::after {
+            content: " "; position: fixed; inset: 0; pointer-events: none; z-index: 100;
+            background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%);
+            background-size: 100% 3px;
+        }
+        h1 {
+            text-align: center; letter-spacing: 4px; font-size: 22px;
+            text-shadow: var(--m-glow); margin: 10px 0 4px;
+        }
+        .sub { text-align: center; color: var(--m-dim); font-size: 12px; margin-bottom: 28px; }
+        .grid {
+            display: grid; gap: 16px; max-width: 1100px; margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        a.card {
+            display: block; text-decoration: none; color: var(--m-green);
+            border: 1px solid var(--m-dim); background: var(--m-dark);
+            padding: 18px 16px 14px; position: relative;
+            transition: all .2s ease;
+        }
+        a.card:hover {
+            border-color: var(--m-green);
+            box-shadow: inset 0 0 30px rgba(0,255,65,.05), 0 0 15px rgba(0,255,65,.2);
+        }
+        .tag {
+            position: absolute; top: -9px; left: 12px; background: var(--m-black);
+            padding: 0 8px; font-size: 10px; font-weight: bold; letter-spacing: 1px;
+            color: var(--m-green); text-shadow: var(--m-glow);
+        }
+        .name { font-weight: bold; font-size: 14px; margin-bottom: 6px; }
+        .desc { color: var(--m-dim); font-size: 11px; line-height: 1.5; }
+        .meta { margin-top: 10px; font-size: 10px; color: var(--m-warn); }
+        .foot { text-align: center; color: var(--m-dim); font-size: 10px; margin-top: 32px; }
+        .blink { animation: b 1s linear infinite; } @keyframes b { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+    <h1>COSMO_V2 // PROTOTYPEN-GALERIE</h1>
+    <div class="sub">Matrix-Terminal-Prototypen · DEVKiTZ™ Ecosystem · <span class="blink">SYS_ONLINE</span></div>
+
+    <div class="grid">
+        <a class="card" href="zellij_matrix_dashboard.html">
+            <span class="tag">01 // MULTIPLEXER</span>
+            <div class="name">Zellij Matrix Dashboard (GSH)</div>
+            <div class="desc">Zellij-UI-Nachbau mit Panes, Tabs, Matrix-Rain-Visualizer und interaktiver
+            GSH-Shell (help · status · matrix · nav). Vorlage der echten Multiplexer-Layouts.</div>
+            <div class="meta">⚠ nutzt Tailwind-CDN (online noetig)</div>
+        </a>
+        <a class="card" href="cosmo_agent_workspace.html">
+            <span class="tag">02 // AGENTEN</span>
+            <div class="name">Cosmo Agent Workspace</div>
+            <div class="desc">Dirigent-Control, A2A-Nanobot-Schwarm-Visualizer (Canvas), Keras-Training,
+            Paperless-ngx, Atuin-Sync, Webhooks-ontherun + nanoChat. Vorlage von <code>cosmo agent</code>.</div>
+            <div class="meta">⚠ nutzt Tailwind-CDN (online noetig)</div>
+        </a>
+        <a class="card" href="cosmo_vanilla_js_dashboard.html">
+            <span class="tag">03 // DASHBOARD</span>
+            <div class="name">Cosmo Dashboard V2 (Vanilla JS)</div>
+            <div class="desc">Profil-Umschalter (Home · DevOps · Security), Layout-Wechsel
+            (Split · Grid · Focus), Module pro Pane durchschaltbar. Vorlage der 5 Cosmo-Profile.</div>
+            <div class="meta">⚠ nutzt Tailwind-CDN (online noetig)</div>
+        </a>
+        <a class="card" href="3x_canvas_dashboard.html">
+            <span class="tag">04 // CANVAS ENGINE</span>
+            <div class="name">3x Canvas Rendering Engine</div>
+            <div class="desc">Reines Canvas-Rendering der drei Views: SPLIT (Home Admin),
+            GRID (DevOps), FOCUS (Security). Komplett offline lauffaehig.</div>
+            <div class="meta">✔ offline lauffaehig</div>
+        </a>
+        <a class="card" href="canvas_praesentation.html">
+            <span class="tag">05 // PRÄSENTATION</span>
+            <div class="name">Canvas Praesentation</div>
+            <div class="desc">3 animierte Slides (Titel · Server-Last · Netzwerk-Signal),
+            weiter per Klick oder Pfeiltaste. Komplett offline lauffaehig.</div>
+            <div class="meta">✔ offline lauffaehig</div>
+        </a>
+    </div>
+
+    <div class="foot">
+        Terminal-Umsetzung dieser Prototypen: <code>../multiplexer/</code> · <code>cosmo desktop|vps|agent|builder|monitor</code>
+    </div>
+</body>
+</html>

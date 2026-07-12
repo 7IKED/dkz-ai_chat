@@ -8,9 +8,9 @@
 
 layout {
     default_tab_template {
-        pane size=1 borderless=true { plugin location="zellij:tab-bar" }
+        pane size=1 borderless=true { plugin location="zellij:tab-bar"; }
         children
-        pane size=2 borderless=true { plugin location="zellij:status-bar" }
+        pane size=2 borderless=true { plugin location="zellij:status-bar"; }
     }
 
     // TAB 1 — Build-Strassen (bis zu 4 parallel)

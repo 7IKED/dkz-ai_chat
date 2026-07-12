@@ -108,6 +108,15 @@ install_zellij
 link_config
 install_launcher
 seed_env
+# 5) Optional: Perfect Zsh Setup ------------------------------------------
+if [ "${COSMO_WITH_ZSH:-ask}" = "yes" ]; then
+    "$MUX_DIR/shell/install-shell.sh"
+elif [ "${COSMO_WITH_ZSH:-ask}" = "ask" ] && [ -t 0 ]; then
+    echo -en "${G}[COSMO]${N} Perfect Zsh Setup mitinstallieren? [j/N] "
+    read -r a; case "$a" in j|J|y|Y) "$MUX_DIR/shell/install-shell.sh";; esac
+fi
+
 echo
 say "fertig. Start:  ${G}cosmo desktop${N}  |  ${G}cosmo agent${N}  |  ${G}cosmo builder${N}"
 say "Profile:        desktop · vps · agent · builder · monitor"
+say "Zsh-Setup:      ${DIM}multiplexer/shell/install-shell.sh${N} (oder COSMO_WITH_ZSH=yes ./install.sh)"
