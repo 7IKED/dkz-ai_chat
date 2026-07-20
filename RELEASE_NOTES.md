@@ -1,4 +1,4 @@
-# 🟢 COSMO_V2 // ODYSSEUS — Release v1.0.0
+# 🟢 OPEN AI TERMINAL — Release v1.0.0
 
 > DEVKiTZ™ Matrix Terminal System — Multiplexer · geschlossenes Agenten-System · Single-File · Skill-Importer. Für Windows · Linux · Docker.
 

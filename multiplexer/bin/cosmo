@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  COSMO_V2 // MULTIPLEXER LAUNCHER                                   ║
+# ║  OPEN AI TERMINAL // LAUNCHER                                     ║
 # ║  DEVKiTZ™ Ecosystem · Zellij Wrapper                               ║
 # ╚══════════════════════════════════════════════════════════════════╝
 #  cosmo <profil> [args]
@@ -37,7 +37,7 @@ have_zellij() { command -v zellij >/dev/null 2>&1; }
 banner() {
 cat <<'EOF'
   ██████╗ ██████╗ ███████╗███╗   ███╗ ██████╗
- ██╔════╝██╔═══██╗██╔════╝████╗ ████║██╔═══██╗   COSMO_V2 MULTIPLEXER
+ ██╔════╝██╔═══██╗██╔════╝████╗ ████║██╔═══██╗   OPEN AI TERMINAL
  ██║     ██║   ██║███████╗██╔████╔██║██║   ██║   DEVKiTZ Ecosystem
  ██║     ██║   ██║╚════██║██║╚██╔╝██║██║   ██║   Zellij · Matrix
  ╚██████╗╚██████╔╝███████║██║ ╚═╝ ██║╚██████╔╝

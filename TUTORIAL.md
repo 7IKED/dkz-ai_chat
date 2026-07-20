@@ -1,10 +1,10 @@
-# 🟢 COSMO_V2 // Das komplette Tutorial
+# 🟢 OPEN AI TERMINAL // Das komplette Tutorial
 
 > Von den Matrix-HTML-Prototypen zur echten Terminal-Umgebung: Multiplexer (Zellij), Perfect Zsh Setup, Teststrassen-Erfassung — auf Linux, Windows (WSL) und Docker.
 
 ```
  ██████╗ ██████╗ ███████╗███╗   ███╗ ██████╗
-██╔════╝██╔═══██╗██╔════╝████╗ ████║██╔═══██╗   COSMO_V2 TUTORIAL
+██╔════╝██╔═══██╗██╔════╝████╗ ████║██╔═══██╗   OPEN AI TERMINAL
 ██║     ██║   ██║███████╗██╔████╔██║██║   ██║   DEVKiTZ™ Ecosystem
 ╚██████╗╚██████╔╝███████║██║ ╚═╝ ██║╚██████╔╝
  ╚═════╝ ╚═════╝ ╚══════╝╚═╝     ╚═╝ ╚═════╝
@@ -62,7 +62,7 @@ Was passiert:
 
 ### 2.2 🪟 Windows
 
-Zellij ist Unix-nativ → unter Windows läuft Cosmo in **WSL2**:
+Zellij ist Unix-nativ → unter Windows läuft OPEN AI TERMINAL in **WSL2**:
 
 ```powershell
 # Falls WSL fehlt (einmalig, Adminrechte, danach Neustart):
@@ -99,7 +99,7 @@ docker run -it --rm -v "$PWD":/work devkitz/cosmo-mux builder
 
 ```
   ██████╗ ██████╗ ███████╗███╗   ███╗ ██████╗
- ██╔════╝██╔═══██╗██╔════╝████╗ ████║██╔═══██╗   COSMO_V2 MULTIPLEXER
+ ██╔════╝██╔═══██╗██╔════╝████╗ ████║██╔═══██╗   OPEN AI TERMINAL
  ...
 Nutzung: cosmo <profil> [args]
 

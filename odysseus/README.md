@@ -1,4 +1,4 @@
-# 🛰️ ODYSSEUS // DEVKiTZ Version 2 & 3
+# 🛰️ OPEN AI TERMINAL // DEVKiTZ Version 2 & 3
 
 > Das geschlossene System: Gitea · Nextcloud · Immich · nanoChat (LibreChat) · KeePass-Vault · Atuin · Voicebox — alles FOSS, alles lokal, alles im Matrix-Terminal (schwarz / neon-grün).
 

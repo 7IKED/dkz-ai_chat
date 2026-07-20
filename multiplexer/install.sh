@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  COSMO_V2 // MULTIPLEXER INSTALLER  (Linux · macOS · WSL)          ║
+# ║  OPEN AI TERMINAL // INSTALLER  (Linux · macOS · WSL)          ║
 # ╚══════════════════════════════════════════════════════════════════╝
 #  - installiert zellij (falls fehlt)
 #  - verlinkt config + layouts nach ~/.config/zellij

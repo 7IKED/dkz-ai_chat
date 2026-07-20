@@ -1,4 +1,4 @@
-# COSMO_V2 Multiplexer — PowerShell Wrapper
+# OPEN AI TERMINAL — PowerShell Wrapper
 # Ruft den `cosmo` Launcher innerhalb von WSL auf.
 #   cosmo.ps1 desktop | vps | agent | builder | monitor
 param([Parameter(ValueFromRemainingArguments=$true)] $Args)

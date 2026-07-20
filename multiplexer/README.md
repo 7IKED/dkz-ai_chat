@@ -1,12 +1,12 @@
-# 🖥️ COSMO_V2 // Multiplexer Umgebung
+# 🖥️ OPEN AI TERMINAL // Multiplexer Umgebung
 
 > 🟢 Zellij-basierte Terminal-Multiplexer Umgebung · DEVKiTZ™ Ecosystem · Matrix Theme
 
-Die Terminal-Version der Cosmo Dashboards: **eine** Multiplexer-Basis, **fünf** vorkonfigurierte Profile, lauffähig unter **Linux, Windows (WSL) und Docker**.
+Die Terminal-Version der OPEN AI TERMINAL Dashboards: **eine** Multiplexer-Basis, **fünf** vorkonfigurierte Profile, lauffähig unter **Linux, Windows (WSL) und Docker**.
 
 ```
  ██████╗ ██████╗ ███████╗███╗   ███╗ ██████╗
-██╔════╝██╔═══██╗██╔════╝████╗ ████║██╔═══██╗   COSMO_V2 MULTIPLEXER
+██╔════╝██╔═══██╗██╔════╝████╗ ████║██╔═══██╗   OPEN AI TERMINAL
 ██║     ██║   ██║███████╗██╔████╔██║██║   ██║   Zellij · Matrix · DkZ
 ╚██████╗╚██████╔╝███████║██║ ╚═╝ ██║╚██████╔╝
  ╚═════╝ ╚═════╝ ╚══════╝╚═╝     ╚═╝ ╚═════╝
@@ -52,7 +52,7 @@ cosmo desktop        # oder: agent · builder · vps · monitor
 
 ### 🪟 Windows (WSL2)
 
-Zellij ist Unix-nativ — unter Windows läuft Cosmo über **WSL2**.
+Zellij ist Unix-nativ — unter Windows läuft OPEN AI TERMINAL über **WSL2**.
 
 ```powershell
 cd multiplexer
@@ -225,6 +225,6 @@ Die Panes sind bewusst **defensiv** geschrieben (`btop || htop || top`), damit d
 
 ## 🔗 Teil des DEVKiTZ™ Ecosystem
 
-Passt zu den Cosmo/Matrix-Dashboards des `dkz-ai_chat` Moduls — gleiche Farbwelt (`#00FF41` / `#008F11`), gleiche Sprache (Dirigent, Nanobot-Swarm, Webhooks-ontherun), jetzt als echte Terminal-Multiplexer-Umgebung.
+Passt zu den OPEN AI TERMINAL Matrix-Dashboards des `dkz-ai_chat` Moduls — gleiche Farbwelt (`#00FF41` / `#008F11`), gleiche Sprache (Dirigent, Nanobot-Swarm, Webhooks-ontherun), jetzt als echte Terminal-Multiplexer-Umgebung.
 
 MIT © [DEVKiTZ™](https://github.com/7IKED/devkitz-workspace)

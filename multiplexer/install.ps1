@@ -1,6 +1,6 @@
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  COSMO_V2 // MULTIPLEXER INSTALLER  (Windows)                       ║
-# ║  Zellij ist Unix-nativ → Cosmo laeuft unter Windows via WSL2.      ║
+# ║  OPEN AI TERMINAL // INSTALLER  (Windows)                       ║
+# ║  Zellij ist Unix-nativ → OPEN AI TERMINAL laeuft unter Windows via WSL2.      ║
 # ╚══════════════════════════════════════════════════════════════════╝
 #  Nutzung (PowerShell):
 #     ./install.ps1
@@ -12,7 +12,7 @@ $ErrorActionPreference = "Stop"
 function Say($m){ Write-Host "[COSMO] $m" -ForegroundColor Green }
 function Warn($m){ Write-Host "[COSMO] $m" -ForegroundColor Yellow }
 
-Say "COSMO_V2 Multiplexer — Windows Installer"
+Say "OPEN AI TERMINAL — Windows Installer"
 
 # 1) WSL vorhanden? -------------------------------------------------------
 $wsl = Get-Command wsl.exe -ErrorAction SilentlyContinue
