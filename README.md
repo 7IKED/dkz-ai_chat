@@ -41,11 +41,29 @@ start index.html    # Windows
 
 ```
 dkz-ai_chat/
-├── index.html          # Hauptseite
-├── style.css           # Modul-spezifische Styles
-├── *.js                # Logik
-└── README.md           # Diese Datei
+├── index.html                      # Hauptseite (Multi-Provider Chat)
+├── chat_version_1/                 # Chat UI v1
+├── chat_version_2/                 # Chat UI v2
+├── dkz-webhook-agents.js           # Webhook-Agenten
+├── session-monitor/                # 🛰️ Claude Session Monitor
+│   ├── index.html                  #    Viewer (Zeitachse + Git-Graph)
+│   └── README.md                   #    Doku
+├── scripts/
+│   └── scan-claude-sessions.py     #    Scanner fuer ~/.claude Transkripte
+└── README.md                       # Diese Datei
 ```
+
+## 🛰️ Claude Session Monitor
+
+Visualisiert die **parallel laufenden Claude-Code-Chats** und verknüpft sie mit der **Git-Historie** —
+welche Session lief wann auf welchem Branch, und welcher Commit stammt aus welchem Chat.
+
+```bash
+python3 scripts/scan-claude-sessions.py   # Daten aus ~/.claude erzeugen
+open session-monitor/index.html           # Viewer oeffnen (auch per file://)
+```
+
+Details siehe [`session-monitor/README.md`](session-monitor/README.md).
 
 ## 🔗 Teil des DEVKiTZ™ Ecosystem
 

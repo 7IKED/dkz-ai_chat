@@ -644,6 +644,15 @@ const PROVIDER_MAP = {
     'vllm':             { url: 'http://srv1298466.hstgr.cloud:8080/v1/chat/completions',   model: 'gemma4-26b' }
 };
 
+// fetch mit Timeout via AbortController — verhindert haengende Requests
+// (z.B. nicht erreichbarer Ollama/vLLM-Endpoint, der sonst ewig auf Antwort wartet)
+function fetchWithTimeout(url, opts, ms = 60000) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), ms);
+    return fetch(url, Object.assign({}, opts, { signal: ctrl.signal }))
+        .finally(() => clearTimeout(t));
+}
+
 async function callProvider(text) {
     const sel = document.getElementById('modelSelect').value;
     const key = document.getElementById('apiKey').value;
@@ -675,21 +684,21 @@ async function callProvider(text) {
         let resp, data, reply;
 
         if (prov.format === 'gemini') {
-            resp = await fetch(prov.url + 'models/' + prov.model + ':generateContent?key=' + key, {
+            resp = await fetchWithTimeout(prov.url + 'models/' + prov.model + ':generateContent?key=' + key, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ system_instruction: { parts: [{ text: 'Du bist ein DkZ-Assistent. Antworte auf Deutsch.' }] }, contents: [{ parts: [{ text }] }] })
             });
             data = await resp.json();
             reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Keine Antwort';
         } else if (prov.format === 'anthropic') {
-            resp = await fetch(prov.url, {
+            resp = await fetchWithTimeout(prov.url, {
                 method: 'POST', headers: { 'x-api-key': key, 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' },
                 body: JSON.stringify({ model: prov.model, system: 'Du bist ein DkZ-Assistent. Antworte auf Deutsch.', messages: [{ role: 'user', content: text }], max_tokens: 4096 })
             });
             data = await resp.json();
             reply = data.content?.[0]?.text || data.error?.message || 'Fehler';
         } else if (prov.format === 'cohere') {
-            resp = await fetch(prov.url, {
+            resp = await fetchWithTimeout(prov.url, {
                 method: 'POST', headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ model: prov.model, messages: [{ role: 'system', content: 'Du bist ein DkZ-Assistent. Antworte auf Deutsch.' }, { role: 'user', content: text }] })
             });
@@ -701,7 +710,7 @@ async function callProvider(text) {
             if (key) headers['Authorization'] = 'Bearer ' + key;
             if (sel.startsWith('openrouter')) { headers['HTTP-Referer'] = 'https://devkitz.dev'; headers['X-Title'] = 'DkZ Super Grok Chat'; }
 
-            resp = await fetch(prov.url, {
+            resp = await fetchWithTimeout(prov.url, {
                 method: 'POST', headers,
                 body: JSON.stringify({
                     model: prov.model,
@@ -714,10 +723,17 @@ async function callProvider(text) {
         }
 
         chatArea.lastChild?.remove(); history.pop();
+        if (resp && !resp.ok && (!reply || reply === 'Fehler')) {
+            reply = '❌ HTTP ' + resp.status + ' ' + resp.statusText + ' — pruefe API-Key, Modellname und Endpoint.';
+        }
         addMsg('bot', reply);
     } catch (e) {
         chatArea.lastChild?.remove(); history.pop();
-        addMsg('bot', '❌ Netzwerkfehler: ' + e.message);
+        if (e.name === 'AbortError') {
+            addMsg('bot', '⏱️ Zeitueberschreitung — ' + esc(sel) + ' hat nicht innerhalb 60s geantwortet. Endpoint erreichbar? (Ollama/vLLM laufend?)');
+        } else {
+            addMsg('bot', '❌ Netzwerkfehler: ' + e.message);
+        }
     }
 }
 
