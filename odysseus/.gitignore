@@ -12,3 +12,9 @@ skills/packs/
 
 # Generierte FLOWS-Uebersichten
 skills/FLOWS.md
+
+# URI-Handler (wird von scripts/uri.sh install erzeugt)
+oat-uri.reg
+
+# Cloud Design System — gebaut von design/build.sh
+design/dist/

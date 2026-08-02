@@ -1,7 +1,7 @@
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  ODYSSEUS // TERMINAL  ·  DEVKiTZ Version 2                        ║
-// ║  Geschlossenes System: Gitea · Cloud/Fotos · nanoChat · Vault ·   ║
-// ║  Atuin-Logs · Voicebox — alles im Matrix-Terminal.                ║
+// ║  OPEN AI TERMINAL  ·  DEVKiTZ                                      ║
+// ║  Geschlossenes System: Gitea · OpenCloud · Immich · Chat mit       ║
+// ║  Werkzeugen · Vault · Atuin-Logs · Voicebox — alles im Terminal.   ║
 // ╚══════════════════════════════════════════════════════════════════╝
 layout {
     default_tab_template {
@@ -23,9 +23,9 @@ layout {
                 }
             }
             pane split_direction="vertical" {
-                pane name="nanoCHAT" {
+                pane name="CHAT+WERKZEUGE" {
                     command "bash"
-                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/nanochat.sh; exec bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/chat-tools.sh repl; exec bash"
                 }
                 pane name="VAULT" {
                     command "bash"
@@ -35,21 +35,47 @@ layout {
         }
     }
 
-    // TAB 2 — BROWSER: Dienste im Terminal surfen
-    tab name="BROWSER" {
-        pane split_direction="vertical" {
-            pane name="GITEA" {
+    // TAB 2 — GITVIZ: Repos sichtbar
+    tab name="GITVIZ" {
+        pane split_direction="horizontal" {
+            pane size="58%" name="GRAPH" {
                 command "bash"
-                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/browser.sh gitea; exec bash"
+                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/gitviz.sh graph; exec bash"
             }
-            pane name="DIENSTE" {
-                command "bash"
-                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/browser.sh; exec bash"
+            pane split_direction="vertical" {
+                pane name="AKTIVITAET" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/gitviz.sh activity; ${ODYSSEUS_DIR:-.}/scripts/gitviz.sh authors; exec bash"
+                }
+                pane name="REPOS" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/gitviz.sh watch"
+                }
             }
         }
     }
 
-    // TAB 3 — GITEA: Code + A2A-Bus
+    // TAB 3 — CLOUD: OpenCloud + Fotos im Terminal-Browser
+    tab name="CLOUD" {
+        pane split_direction="vertical" {
+            pane name="OPENCLOUD" {
+                command "bash"
+                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/browser.sh cloud; exec bash"
+            }
+            pane split_direction="horizontal" {
+                pane name="FOTOS" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/browser.sh fotos; exec bash"
+                }
+                pane name="DIENSTE" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/browser.sh; exec bash"
+                }
+            }
+        }
+    }
+
+    // TAB 4 — GITEA: Code + A2A-Bus
     tab name="GITEA" {
         pane split_direction="vertical" {
             pane name="GIT" {
@@ -63,7 +89,7 @@ layout {
         }
     }
 
-    // TAB 4 — LOGS: Stack-Logs + Atuin-History
+    // TAB 5 — LOGS: Stack-Logs + Atuin-History
     tab name="LOGS" {
         pane split_direction="horizontal" {
             pane size="60%" name="STACK-LOGS" {
@@ -72,7 +98,7 @@ layout {
             }
             pane name="ATUIN" {
                 command "bash"
-                args "-lc" "atuin history list --limit 20 2>/dev/null || echo '[ODYSSEUS] atuin-Client fehlt (cargo install atuin) — Server laeuft auf :8888'; exec bash"
+                args "-lc" "atuin history list --limit 20 2>/dev/null || echo '[OAT] atuin-Client fehlt (cargo install atuin) — Server laeuft auf :8888'; exec bash"
             }
         }
     }

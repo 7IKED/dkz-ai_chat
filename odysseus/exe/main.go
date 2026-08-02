@@ -1,5 +1,5 @@
 // ╔══════════════════════════════════════════════════════════════════╗
-// ║  ODYSSEUS // SINGLE-FILE LAUNCHER  ·  DEVKiTZ Version 3            ║
+// ║  OPEN AI TERMINAL // SINGLE-FILE LAUNCHER  ·  Version 3            ║
 // ║  Eine Datei (odysseus.exe / odysseus-linux) mit eingebettetem      ║
 // ║  Komplett-System: entpackt sich nach C:\DEVKiTZ\odysseus bzw.     ║
 // ║  ~/DEVKiTZ/odysseus und startet die Umgebung.                     ║
@@ -98,10 +98,10 @@ func main() {
 ██║   ██║██║  ██║  ╚██╔╝  ╚════██║╚════██║██╔══╝  ██║   ██║╚════██║
 ╚██████╔╝██████╔╝   ██║   ███████║███████║███████╗╚██████╔╝███████║
  ╚═════╝ ╚═════╝    ╚═╝   ╚══════╝╚══════╝╚══════╝ ╚═════╝ ╚══════╝
-        DEVKiTZ Version 3 · Single-File · Matrix` + reset)
+  OPEN AI TERMINAL · DEVKiTZ Version 3 · Single-File` + reset)
 
 	dst := target()
-	fmt.Printf("%s[ODYSSEUS]%s entpacke System nach %s ...\n", green, reset, dst)
+	fmt.Printf("%s[OAT]%s entpacke System nach %s ...\n", green, reset, dst)
 	if err := os.MkdirAll(dst, 0o755); err != nil {
 		fmt.Println("FEHLER:", err)
 		os.Exit(1)
@@ -115,10 +115,10 @@ func main() {
 	if _, err := os.Stat(env); os.IsNotExist(err) {
 		if b, err := os.ReadFile(filepath.Join(dst, ".env.example")); err == nil {
 			os.WriteFile(env, b, 0o600)
-			fmt.Printf("%s[ODYSSEUS]%s .env angelegt — Passwoerter aendern: %s\n", green, reset, env)
+			fmt.Printf("%s[OAT]%s .env angelegt — Passwoerter aendern: %s\n", green, reset, env)
 		}
 	}
-	fmt.Printf("%s[ODYSSEUS]%s System bereit.\n\n", green, reset)
+	fmt.Printf("%s[OAT]%s System bereit.\n\n", green, reset)
 
 	// Naechste Schritte / Autostart
 	dockerOK := exec.Command("docker", "version").Run() == nil
@@ -138,7 +138,7 @@ func main() {
 	// Linux/macOS: Rechte setzen und direkt anbieten
 	exec.Command("chmod", "-R", "+x", filepath.Join(dst, "bin"), filepath.Join(dst, "scripts")).Run()
 	if dockerOK {
-		fmt.Printf("%s[ODYSSEUS]%s starte Stack (docker compose up -d) ...\n", green, reset)
+		fmt.Printf("%s[OAT]%s starte Stack (docker compose up -d) ...\n", green, reset)
 		cmd := exec.Command("docker", "compose", "up", "-d")
 		cmd.Dir = dst
 		cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr

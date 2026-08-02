@@ -12,10 +12,10 @@ DC() { docker compose -f "$DIR/docker-compose.yml" "$@"; }
 G='\033[38;5;46m'; DIM='\033[38;5;28m'; R='\033[38;5;196m'; N='\033[0m'
 
 health() {
-    printf "${G}╔═ ODYSSEUS // SYSTEM-STATUS ═══════════════════════${N}\n"
+    printf "${G}╔═ OPEN AI TERMINAL // SYSTEM-STATUS ═══════════════${N}\n"
     local svc url
     for svc in "GITEA:http://127.0.0.1:${GITEA_PORT:-3300}/api/healthz" \
-               "NEXTCLOUD:http://127.0.0.1:${NEXTCLOUD_PORT:-8081}/status.php" \
+               "OPENCLOUD:http://127.0.0.1:${OPENCLOUD_PORT:-9200}/status.php" \
                "IMMICH:http://127.0.0.1:${IMMICH_PORT:-2283}/api/server/ping" \
                "nanoCHAT:http://127.0.0.1:${LIBRECHAT_PORT:-3080}/health" \
                "ATUIN:http://127.0.0.1:${ATUIN_PORT:-8888}"; do
@@ -31,9 +31,17 @@ health() {
 
 case "${1:-status}" in
     status) health;;
-    up)     DC up -d --build && health;;
-    down)   DC down;;
+    up)
+        shift
+        # `up --nextcloud` nimmt die optionale Zweit-Cloud dazu
+        if [ "${1:-}" = "--nextcloud" ]; then
+            docker compose -f "$DIR/docker-compose.yml" --profile nextcloud up -d --build && health
+        else
+            DC up -d --build && health
+        fi
+        ;;
+    down)   DC --profile nextcloud down;;
     logs)   DC logs -f --tail=40;;
     watch)  while true; do clear; health; sleep 5; done;;
-    *)      echo "usage: odysseus-ctl.sh [status|up|down|logs|watch]";;
+    *)      echo "usage: odysseus-ctl.sh [status|up [--nextcloud]|down|logs|watch]";;
 esac

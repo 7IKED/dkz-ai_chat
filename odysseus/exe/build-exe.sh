@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ╔══════════════════════════════════════════════════════════════════╗
-# ║  ODYSSEUS // EXE-BUILDER  ·  baut Version 3 (Single-File)          ║
+# ║  OPEN AI TERMINAL // EXE-BUILDER  ·  Version 3 (Single-File)       ║
 # ╚══════════════════════════════════════════════════════════════════╝
 #  ./build-exe.sh          baut dist/odysseus.exe (Windows) +
 #                          dist/odysseus-linux (Linux) mit eingebettetem

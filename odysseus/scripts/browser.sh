@@ -11,7 +11,8 @@ G='\033[38;5;46m'; DIM='\033[38;5;28m'; N='\033[0m'
 url_for() {
     case "$1" in
         gitea) echo "http://127.0.0.1:${GITEA_PORT:-3300}";;
-        cloud|nextcloud) echo "http://127.0.0.1:${NEXTCLOUD_PORT:-8081}";;
+        cloud|opencloud) echo "http://127.0.0.1:${OPENCLOUD_PORT:-9200}";;
+        nextcloud) echo "http://127.0.0.1:${NEXTCLOUD_PORT:-8081}";;
         fotos|immich) echo "http://127.0.0.1:${IMMICH_PORT:-2283}";;
         chat|librechat|nanochat) echo "http://127.0.0.1:${LIBRECHAT_PORT:-3080}";;
         atuin) echo "http://127.0.0.1:${ATUIN_PORT:-8888}";;
@@ -37,15 +38,17 @@ open_url() {
 
 if [ $# -ge 1 ]; then open_url "$(url_for "$1")"; fi
 
-echo -e "${G}╔═ ODYSSEUS DIENSTE ════════════════════════════════${N}"
+echo -e "${G}╔═ OPEN AI TERMINAL // DIENSTE ═════════════════════${N}"
 echo -e "  ${G}1${N}  GITEA      (Code/Issues/A2A)   :${GITEA_PORT:-3300}"
-echo -e "  ${G}2${N}  NEXTCLOUD  (Dateien)           :${NEXTCLOUD_PORT:-8081}"
+echo -e "  ${G}2${N}  OPENCLOUD  (Dateien/Sync)      :${OPENCLOUD_PORT:-9200}"
 echo -e "  ${G}3${N}  IMMICH     (Foto-Oberflaeche)  :${IMMICH_PORT:-2283}"
 echo -e "  ${G}4${N}  nanoCHAT   (LibreChat)         :${LIBRECHAT_PORT:-3080}"
 echo -e "  ${G}5${N}  ATUIN      (History-Sync)      :${ATUIN_PORT:-8888}"
-read -rp "Auswahl [1-5]: " c
+echo -e "  ${DIM}6  NEXTCLOUD  (nur --profile)      :${NEXTCLOUD_PORT:-8081}${N}"
+read -rp "Auswahl [1-6]: " c
 case "$c" in
     1) open_url "$(url_for gitea)";; 2) open_url "$(url_for cloud)";;
     3) open_url "$(url_for fotos)";; 4) open_url "$(url_for chat)";;
-    5) open_url "$(url_for atuin)";; *) exec bash;;
+    5) open_url "$(url_for atuin)";; 6) open_url "$(url_for nextcloud)";;
+    *) exec bash;;
 esac

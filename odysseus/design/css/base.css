@@ -1,0 +1,66 @@
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  OPEN AI TERMINAL // CLOUD DESIGN SYSTEM — BASE                    ║
+   ║  Reset + Grundtypografie + CRT-Overlay.                            ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--oat-bg-base);
+  color: var(--oat-fg-primary);
+  font-family: var(--oat-font);
+  font-size: var(--oat-text-md);
+  line-height: var(--oat-leading-normal);
+  -webkit-font-smoothing: none;
+  text-rendering: optimizeSpeed;
+}
+
+h1, h2, h3, h4 { margin: 0 0 var(--oat-space-3); line-height: var(--oat-leading-tight); text-wrap: balance; }
+h1 { font-size: var(--oat-text-3xl); font-weight: var(--oat-weight-black); letter-spacing: var(--oat-track-wider); text-shadow: var(--oat-glow-strong); }
+h2 { font-size: var(--oat-text-2xl); font-weight: var(--oat-weight-bold);  letter-spacing: var(--oat-track-wide);  text-shadow: var(--oat-glow); }
+h3 { font-size: var(--oat-text-xl);  font-weight: var(--oat-weight-bold); }
+h4 { font-size: var(--oat-text-lg);  font-weight: var(--oat-weight-bold); color: var(--oat-fg-muted); letter-spacing: var(--oat-track-wide); text-transform: uppercase; }
+
+p  { margin: 0 0 var(--oat-space-4); max-width: var(--oat-content-max); color: var(--oat-fg-neutral); }
+small, .oat-meta { font-size: var(--oat-text-xs); color: var(--oat-fg-grey); letter-spacing: var(--oat-track-wide); }
+
+a { color: var(--oat-fg-accent); text-decoration: none; border-bottom: 1px dotted currentColor; transition: text-shadow var(--oat-motion-fast) var(--oat-ease); }
+a:hover, a:focus-visible { text-shadow: var(--oat-glow); border-bottom-style: solid; }
+
+hr { border: 0; border-top: 1px dashed var(--oat-border-subtle); margin: var(--oat-space-5) 0; }
+
+code, kbd, samp, pre { font-family: var(--oat-font); font-size: .95em; }
+code { color: var(--oat-fg-accent); background: var(--oat-bg-sunken); padding: 1px 5px; border: 1px solid var(--oat-border-subtle); }
+pre  { background: var(--oat-bg-sunken); border: 1px solid var(--oat-border-subtle); padding: var(--oat-space-4); overflow-x: auto; line-height: var(--oat-leading-loose); text-shadow: 0 0 6px rgba(0,255,65,.25); }
+pre code { border: 0; padding: 0; background: none; }
+
+::selection { background: var(--oat-fg-primary); color: var(--oat-bg-base); }
+
+:focus-visible {
+  outline: var(--oat-border-thick) solid var(--oat-fg-accent);
+  outline-offset: 2px;
+}
+
+/* Scrollbars — auch in Fremd-UIs sichtbar konsistent */
+* { scrollbar-color: var(--oat-fg-muted) var(--oat-bg-sunken); scrollbar-width: thin; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: var(--oat-bg-sunken); }
+*::-webkit-scrollbar-thumb { background: var(--oat-fg-faint); border: 1px solid var(--oat-border-subtle); }
+*::-webkit-scrollbar-thumb:hover { background: var(--oat-fg-muted); }
+
+/* ── CRT-Overlay: <body class="oat-crt"> ───────────────────────────
+   Scanlines + Vignette. Rein dekorativ, pointer-events:none, und bei
+   prefers-reduced-motion / prefers-contrast:more abgeschaltet.        */
+.oat-crt::after {
+  content: ""; position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  background:
+    linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,.28) 50%),
+    linear-gradient(90deg, rgba(255,0,0,.05), rgba(0,255,0,.02), rgba(0,0,255,.05));
+  background-size: 100% var(--oat-scanline), var(--oat-scanline) 100%;
+}
+.oat-crt::before {
+  content: ""; position: fixed; inset: 0; z-index: 9997; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%);
+}
+@media (prefers-contrast: more) { .oat-crt::after, .oat-crt::before { display: none; } }

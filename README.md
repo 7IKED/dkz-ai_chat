@@ -44,15 +44,25 @@ dkz-ai_chat/
 ├── index.html          # Hauptseite
 ├── style.css           # Modul-spezifische Styles
 ├── *.js                # Logik
-├── multiplexer/        # 🖥️ V1: Cosmo Multiplexer (Zellij + Zsh) — stabil
-├── odysseus/           # 🛰️ V2: geschlossenes System (Gitea·Cloud·Chat·Vault) + V3: exe/
+├── multiplexer/        # 🖥️ V1: Terminal-Multiplexer (Zellij + Zsh) — stabil
+├── odysseus/           # 🛰️ V2: geschlossenes System (Gitea·OpenCloud·Chat·Vault) + V3: exe/
+│   └── design/         # 🎨 Cloud Design System (tokens.json → CSS·Shell·Zellij)
 ├── prototypes/         # 🟢 Matrix-Terminal-Prototypen (HTML, Galerie: index.html)
 └── README.md           # Diese Datei
 ```
 
-## 🛰️ Odysseus (Version 2 + 3)
+## 🛰️ OPEN AI TERMINAL (Version 2 + 3)
 
-Das geschlossene Komplett-System im Matrix-Terminal: **Gitea** (Zentrum + A2A-Bus), **Nextcloud** mit **Immich**-Foto-Oberfläche, **nanoChat** (LibreChat), **KeePass-Vault** für Agenten-Keys, **Atuin**-Logs, **Voicebox** (Piper TTS) — plus **Version 3** als Single-File (`odysseus.exe`). → [`odysseus/README.md`](odysseus/README.md)
+Das geschlossene Komplett-System im Matrix-Terminal: **Gitea** (Zentrum + A2A-Bus), **OpenCloud** mit **Immich**-Foto-Oberfläche, **Chat mit Werkzeugen**, **KeePass-Vault** für Agenten-Keys, **Atuin**-Logs, **Voicebox** (Piper TTS) — plus **Version 3** als Single-File (`odysseus.exe`). → [`odysseus/README.md`](odysseus/README.md)
+
+Dazu vier Bausteine, die alles zusammenhalten:
+
+| Baustein | Was es tut | Start |
+|:--|:--|:--|
+| 🎨 **Cloud Design System** | ein Token-Satz → CSS, Shell-Farben, Zellij-Theme, Themes für OpenCloud/Gitea/Nextcloud/LibreChat | `odysseus design build` |
+| 📊 **GITVIZ** | Repos sichtbar: Commit-Graph, Aktivitäts-Sparkline, Autoren, Branches, Gitea-Repos | `odysseus gitviz` |
+| 🔗 **`oat://`** | Links aus Gitea/Chat/Notizen öffnen im Terminal statt im Browser | `odysseus uri install` |
+| 🛠️ **Chat-Werkzeuge** | das lokale Modell fragt das System wirklich ab (12 Werkzeuge, Schreibrechte aus) | `odysseus chat` |
 
 ## 🖥️ Cosmo Multiplexer Umgebung
 

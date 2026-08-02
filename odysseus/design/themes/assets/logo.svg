@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" width="240" height="48" role="img" aria-label="OPEN AI TERMINAL">
+  <defs>
+    <filter id="oat-glow" x="-30%" y="-60%" width="160%" height="220%">
+      <feGaussianBlur stdDeviation="1.6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="240" height="48" fill="none"/>
+  <!-- Terminal-Rahmen -->
+  <rect x="1" y="7" width="34" height="34" fill="none" stroke="#008F11" stroke-width="1.5"/>
+  <path d="M1 7h8M1 7v8M35 7h-8M35 7v8M1 41h8M1 41v-8M35 41h-8M35 41v-8"
+        fill="none" stroke="#00FF41" stroke-width="2" filter="url(#oat-glow)"/>
+  <!-- Prompt -->
+  <path d="M8 18l6 6-6 6" fill="none" stroke="#00FF41" stroke-width="2.5"
+        stroke-linecap="square" stroke-linejoin="miter" filter="url(#oat-glow)"/>
+  <rect x="19" y="30" width="9" height="2.5" fill="#39FF14" filter="url(#oat-glow)"/>
+  <!-- Wortmarke -->
+  <text x="47" y="21" fill="#00FF41" filter="url(#oat-glow)"
+        font-family="ui-monospace,'Cascadia Code','JetBrains Mono','Courier New',monospace"
+        font-size="15" font-weight="800" letter-spacing="1.5">OPEN AI</text>
+  <text x="47" y="38" fill="#39FF14" filter="url(#oat-glow)"
+        font-family="ui-monospace,'Cascadia Code','JetBrains Mono','Courier New',monospace"
+        font-size="15" font-weight="800" letter-spacing="3.2">TERMINAL</text>
+</svg>

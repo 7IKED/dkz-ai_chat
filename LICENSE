@@ -27,9 +27,10 @@ Die von Odysseus orchestrierten Drittkomponenten stehen unter ihren
 jeweiligen freien Lizenzen und werden NICHT mit diesem Repo ausgeliefert,
 sondern zur Laufzeit als Container-Images bezogen:
 
-  Gitea (MIT) · Nextcloud (AGPL-3.0) · Immich (AGPL-3.0) ·
-  LibreChat (MIT) · Atuin (MIT) · Piper/wyoming-piper (MIT) ·
-  KeePassXC (GPL-2.0-or-later) · PostgreSQL · Valkey (BSD) · MongoDB (SSPL)
+  Gitea (MIT) · OpenCloud (Apache-2.0) · Nextcloud (AGPL-3.0) ·
+  Immich (AGPL-3.0) · LibreChat (MIT) · Atuin (MIT) ·
+  Piper/wyoming-piper (MIT) · KeePassXC (GPL-2.0-or-later) ·
+  PostgreSQL · Valkey (BSD) · MongoDB (SSPL)
 
 Zellij (MIT) und die Zsh-Plugins stehen ebenfalls unter ihren eigenen
 Lizenzen. Prüfe die jeweiligen Projekte für Details.

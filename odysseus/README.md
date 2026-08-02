@@ -1,6 +1,6 @@
 # 🛰️ OPEN AI TERMINAL // DEVKiTZ Version 2 & 3
 
-> Das geschlossene System: Gitea · Nextcloud · Immich · nanoChat (LibreChat) · KeePass-Vault · Atuin · Voicebox — alles FOSS, alles lokal, alles im Matrix-Terminal (schwarz / neon-grün).
+> Das geschlossene System: Gitea · **OpenCloud** · Immich · Chat **mit Werkzeugen** · KeePass-Vault · Atuin · Voicebox — alles FOSS, alles lokal, alles im Matrix-Terminal (schwarz / neon-grün). Mit **Cloud Design System**, **Repo-Visualisierung** und **`oat://`-URI-Handler**.
 
 ```
  ██████╗ ██████╗ ██╗   ██╗███████╗███████╗███████╗██╗   ██╗███████╗
@@ -23,44 +23,57 @@
 
 ```
                  ┌──────────────────────────────────────────┐
-                 │       ODYSSEUS (127.0.0.1, geschlossen)  │
+                 │   OPEN AI TERMINAL (127.0.0.1, zu)       │
    Matrix-       │                                          │
    Terminal ──── │  GITEA :3300  ◄── A2A-Bus (Webhooks)     │
    (zellij)      │    │  alles in einem Gitea: Code+Issues  │
-     │           │  NEXTCLOUD :8081 ──┐                     │
+     │           │  OPENCLOUD :9200 ──┐                     │
      ├ BRIDGE    │  IMMICH :2283 ◄────┘ (Foto-Oberflaeche,  │
-     ├ BROWSER   │            liest Nextcloud-Daten ro)     │
-     ├ GITEA     │  LIBRECHAT :3080  (nanoChat, Ollama)     │
-     └ LOGS      │  ATUIN :8888      (History/Logs-Sync)    │
-                 │  VOICEBOX :10200  (Piper TTS, deutsch)   │
+     ├ GITVIZ    │            liest OpenCloud-Dateien ro)   │
+     ├ CLOUD     │  LIBRECHAT :3080  (nanoChat, Ollama)     │
+     ├ GITEA     │  ATUIN :8888      (History/Logs-Sync)    │
+     └ LOGS      │  VOICEBOX :10200  (Piper TTS, deutsch)   │
                  │  VAULT (KeePass .kdbx — Agenten-Keys)    │
                  └──────────────────────────────────────────┘
+                        ▲                    ▲
+                 oat://…│         ein Design │ design/tokens.json
+                 URI-Handler        fuer alles│ → CSS · Shell · Zellij
 ```
 
 | Dienst | Software | Lizenz | Zweck |
 |:--|:--|:--|:--|
 | GITEA | gitea | MIT | Zentrum: Code, Issues, **A2A-Webhooks** |
-| NEXTCLOUD | nextcloud | AGPL | Dateien/Sync |
-| IMMICH | immich | AGPL | **Foto-Oberfläche** (sieht Nextcloud-Daten) |
+| **OPENCLOUD** | opencloud | **Apache-2.0** | **Dateien/Sync/Freigaben** — Single-Binary, kein PHP |
+| IMMICH | immich | AGPL | **Foto-Oberfläche** (liest OpenCloud read-only) |
 | nanoCHAT | LibreChat | MIT | Chat-UI + API, lokale Modelle via Ollama |
 | ATUIN | atuin server | MIT | Shell-History/**Logs aller Agenten** |
 | VOICEBOX | Piper TTS (wyoming) | MIT | Text→Sprache (`odysseus say "..."`) |
 | VAULT | KeePassXC (.kdbx) | GPL | **Agenten-Zugangsdaten & API-Keys** |
+| _NEXTCLOUD_ | nextcloud | AGPL | _optional_ — `odysseus up --nextcloud` |
+
+**Warum OpenCloud als Cloud:** ein Go-Binary statt PHP+Apache, startet in Sekunden,
+braucht keinen eigenen DB-Container und bringt einen offiziellen Theme-Mechanismus mit
+— dadurch trägt das Cloud Design System dort sauber. Nextcloud bleibt als Profil
+erhalten, falls die App-Landschaft gebraucht wird. Der POSIX-Speichertreiber ist
+gesetzt (`STORAGE_USERS_DRIVER: posix`), damit die Dateien als **normaler Baum** auf
+der Platte liegen und Immich sie als External Library lesen kann.
 
 ## 🚀 Version 2 — Installation & Start
 
 ```bash
 # Linux/WSL (Windows: ./install.ps1 → C:\DEVKiTZ\odysseus)
 ./install.sh                 # → ~/DEVKiTZ/odysseus + `odysseus` im PATH
+                             #   baut das Design System, fragt nach oat://
 
 cd ~/DEVKiTZ/odysseus
-nano .env                    # Passwoerter setzen!
-odysseus up                  # Stack hochfahren
+nano .env                    # ADMIN_PASS setzen!
+odysseus up                  # Stack hochfahren (11 Dienste)
 odysseus init                # Gitea: Admin + Org DEVKITZ + Repo + Push
-odysseus                     # das Matrix-Terminal (4 Tabs)
+odysseus design apply        # Matrix-Look in die Web-UIs tragen
+odysseus                     # das Matrix-Terminal (5 Tabs)
 ```
 
-**Terminal-Tabs:** `BRIDGE` (Status-Watch · Operator-Shell · nanoChat · Vault) · `BROWSER` (Dienste im Terminal-Browser: carbonyl/browsh/w3m/lynx) · `GITEA` (Git + A2A-Inbox) · `LOGS` (Stack-Logs + Atuin).
+**Terminal-Tabs:** `BRIDGE` (Status-Watch · Operator-Shell · **Chat mit Werkzeugen** · Vault) · `GITVIZ` (Commit-Graph · Aktivität · Repos live) · `CLOUD` (OpenCloud + Fotos im Terminal-Browser) · `GITEA` (Git + A2A-Inbox) · `LOGS` (Stack-Logs + Atuin).
 
 ### Agenten & ihre Keys (Vault)
 
@@ -73,14 +86,103 @@ eval "$(odysseus vault agent-env api/openrouter api/xai)"   # → $API_OPENROUTE
 
 Agenten setzen `ODYSSEUS_VAULT_PW` (z.B. aus systemd-creds) und ziehen sich ihre Keys selbst — **keine Klartext-.env für API-Keys**.
 
-### A2A & nanoChat
+### Chat **mit Werkzeugen** (A2A inklusive)
+
+Das Modell im Terminal redet nicht nur — es kann das System **abfragen**.
 
 ```bash
-odysseus chat                                # Chat-REPL (Ollama lokal)
+odysseus chat                                # REPL mit Werkzeugen
+odysseus chat ask "Welche Dienste sind unten?"
+odysseus tools list                          # welche Werkzeuge gibt es
+odysseus tools schema anthropic              # Tool-Definitionen als JSON
+odysseus tools call git_log '{"limit":5}'    # Werkzeug direkt (zum Testen)
 odysseus chat a2a coder "Review lane-a"      # Nachricht an Agent 'coder'
 odysseus chat inbox coder                    # dessen Inbox (live tail)
 ```
-Gitea-Webhooks (push/issue) können per URL auf eigene Handler zeigen → der A2A-Bus läuft **im** geschlossenen System.
+
+**12 Werkzeuge**, davon 10 rein lesend und sofort nutzbar:
+`system_status` · `git_repos` · `git_log` · `git_activity` · `git_issues` ·
+`cloud_list` (OpenCloud via WebDAV) · `skills_list` · `skills_registry` ·
+`vault_list` (nur Namen, **nie** Werte) · `say`.
+Verändernde Werkzeuge (`a2a_send`, `skills_import`) sind **standardmäßig aus** —
+`OAT_TOOLS_ALLOW_WRITE=1` schaltet sie frei, und selbst dann wird nachgefragt.
+
+Grenzen, die im Code stehen: kein Werkzeug führt beliebige Shell-Befehle aus,
+jedes Argument wird gegen Metazeichen und `..` geprüft, nichts geht je durch
+eine Shell, und die Werkzeug-Schleife bricht nach `OAT_TOOLS_MAX_ROUNDS` (6) ab.
+
+Backend: Ollama (`/api/chat` mit `tools[]`). Schema-Export auch im
+Anthropic-Format, falls die Werkzeuge an einem anderen Modell hängen sollen.
+Gitea-Webhooks (push/issue) können auf eigene Handler zeigen → der A2A-Bus läuft
+**im** geschlossenen System.
+
+## 🎨 Cloud Design System
+
+Ein Token-Satz für **alles** — Terminal, Zellij-Theme und jede Web-UI.
+
+```bash
+odysseus design build        # tokens.json → CSS · Shell-Farben · Zellij-Theme
+odysseus design check        # CI: bricht ab, wenn Tokens auseinanderlaufen
+odysseus design apply        # Matrix-Look in die laufenden Web-UIs tragen
+odysseus design styleguide   # lebendes Styleguide öffnen
+```
+
+`design/tokens.json` ist die einzige Stelle, an der eine Farbe steht. Daraus
+entstehen `dist/oat-cloud.css` (Web), `dist/oat-tokens.sh` (ANSI-256 für die
+Shell-Skripte — `gitviz`, `uri` und `chat-tools` benutzen sie wirklich) und
+`dist/oat-matrix.kdl` (Zellij). Details: [`design/README.md`](design/README.md).
+
+## 📊 GITVIZ — Repos sichtbar machen
+
+```bash
+odysseus gitviz              # Übersicht: Gitea-Repos + lokales Repo
+odysseus gitviz graph        # Commit-Graph, eingefärbt
+odysseus gitviz activity     # Commits/Tag als Sparkline (30 Tage)
+odysseus gitviz authors      # Autoren als Balken
+odysseus gitviz branches     # Branches mit ahead/behind
+odysseus gitviz repos        # alle Repos aus Gitea (Issues, Sterne, Größe)
+odysseus gitviz issues DEVKITZ/odysseus
+```
+
+```
+  ······▂·█······▄▂·············
+  vor 30 Tagen         heute
+  47 Commits in 30 Tagen   1.6 pro Tag im Schnitt
+```
+
+Liest die **Gitea-API** (Token aus `$GITEA_TOKEN` oder still aus dem Vault:
+`api/gitea`) und das lokale Git. Ohne Gitea zeigt es trotzdem alles Lokale.
+
+## 🔗 `oat://` — Links landen im Terminal
+
+Ein Link in einem Gitea-Issue, einer Chat-Nachricht oder einer Notiz öffnet die
+richtige Stelle **im Terminal** statt im Browser.
+
+```bash
+odysseus uri install                    # als Systemhandler registrieren
+odysseus uri list                       # alle unterstützten URIs
+odysseus uri test 'oat://gitviz/graph'  # Trockenlauf
+```
+
+| URI | Wirkung |
+|:--|:--|
+| `oat://repo/DEVKITZ/odysseus` | Repo/Issues in GITVIZ |
+| `oat://gitviz/activity` | Aktivitätsansicht |
+| `oat://commit/<sha>` | Commit anzeigen |
+| `oat://cloud/Projekte` | Ordner in OpenCloud |
+| `oat://chat/coder` | Chat mit Werkzeugen |
+| `oat://a2a/coder?msg=…` | Nachricht in die A2A-Inbox |
+| `oat://say?text=…` | Voicebox |
+| `oat://status` · `oat://terminal` | Status · Terminal |
+
+**Sicherheit:** Ein URI-Handler ist eine Tür von außen — jede Webseite kann
+`oat://…` aufrufen. Deshalb: feste Whitelist (es gibt **kein** `oat://run/…`),
+Argumente werden nach dem Dekodieren gegen Shell-Metazeichen, `..` und
+führende `-` geprüft, nichts wird je an eine Shell gereicht, und alles
+Verändernde (`skills`, `vault`) fragt nach.
+
+Registriert wird unter Linux per `.desktop` + `xdg-mime`, unter Windows per
+erzeugter `oat-uri.reg` (WSL + Windows Terminal).
 
 ### Geschlossenes System
 
@@ -121,15 +223,45 @@ Jede `SKILL.md` wird **kollisionssicher** (Pack-Prefix bei Namensgleichheit) nac
 
 ```
 odysseus/
-├── bin/odysseus            # Launcher (terminal·up·init·vault·chat·say·browse)
-├── docker-compose.yml      # der geschlossene Stack (11 Services)
+├── bin/odysseus            # Launcher (terminal·up·init·gitviz·chat·uri·design·vault·skills)
+├── docker-compose.yml      # der geschlossene Stack (11 Dienste + Profil nextcloud)
 ├── .env.example            # Vorlage (→ .env, nie committet)
 ├── config/                 # zellij-config · librechat.yaml · vault.Dockerfile
-├── layouts/odysseus.kdl    # Matrix-Terminal (BRIDGE·BROWSER·GITEA·LOGS)
-├── scripts/                # vault · nanochat(A2A) · voice · browser · gitea-init · ctl · skill-import
-├── skills/                 # import-skills Skill · registry/packs.tsv (43 Packs) · packs/ (Cache)
+├── layouts/odysseus.kdl    # Terminal (BRIDGE·GITVIZ·CLOUD·GITEA·LOGS)
+├── design/                 # 🎨 Cloud Design System
+│   ├── tokens.json         #    die einzige Stelle mit Farben
+│   ├── build.sh            #    → dist/ (CSS · Shell · Zellij)
+│   ├── apply-theme.sh      #    Theme in laufende Container tragen
+│   ├── styleguide.html     #    lebendes Styleguide
+│   ├── css/ · themes/      #    Bauteile · OpenCloud/Nextcloud/Gitea/LibreChat
+│   └── dist/               #    gebaut (nicht im Repo)
+├── scripts/
+│   ├── gitviz.sh           # 📊 Repo-Visualisierung (Gitea-API + lokales Git)
+│   ├── uri.sh              # 🔗 oat://-Handler (+ install für Linux/Windows)
+│   ├── chat-tools.sh       # 🛠️ Chat mit Werkzeugen (Tool-Calling)
+│   └── vault · nanochat(A2A) · voice · browser · gitea-init · ctl · skill-import
+├── skills/                 # import-skills Skill · registry/packs.tsv (43 Packs)
 ├── install.sh / install.ps1  # Linux · Windows (C:\DEVKiTZ\odysseus)
 └── exe/                    # Version 3: main.go + build-exe.sh → dist/
 ```
 
-MIT © DEVKiTZ™ — Komponenten unter ihren jeweiligen freien Lizenzen (MIT/AGPL/GPL).
+## ✅ Was in dieser Session real geprüft wurde
+
+| Geprüft | Wie |
+|:--|:--|
+| Design-Build | `build.sh` läuft: 65 Tokens, 60 CSS-Variablen, Abgleich grün |
+| Zellij-Theme | erzeugtes `oat-matrix.kdl` von **zellij 0.44.3** akzeptiert |
+| Terminal-Layout | 5-Tab-Layout als echte zellij-Session gestartet |
+| Compose | `docker compose config` valide — 11 Dienste, Profil `nextcloud` greift |
+| GITVIZ | `graph`, `activity`, `authors`, `branches` gegen dieses Repo gelaufen |
+| URI-Handler | 6 gültige URIs im Trockenlauf, **13 Einschleusungsversuche abgewehrt** |
+| Chat-Werkzeuge | Tool-Schleife end-to-end gegen einen Ollama-Stellvertreter: Modell fordert `git_log` an → Werkzeug läuft → Antwort mit echten Commit-Daten |
+| Werkzeug-Härtung | Schreibwerkzeuge gesperrt, Argument-Einschleusung abgewiesen |
+| Installation | `install.sh` in ein leeres Ziel: Launcher, `dist/`, `.env` erzeugt |
+
+**Nicht geprüft:** das Anwenden auf laufende Container und OpenCloud selbst — in
+dieser Umgebung lassen sich keine Images ziehen (Registry gesperrt). Compose ist
+syntaktisch validiert; `apply-theme.sh` prüft jeden Schritt einzeln und meldet
+Fehlschläge, statt Erfolg zu behaupten.
+
+MIT © DEVKiTZ™ — Komponenten unter ihren jeweiligen freien Lizenzen (MIT/Apache-2.0/AGPL/GPL).

@@ -19,7 +19,9 @@
 6. [Das Perfect Zsh Setup](#6-das-perfect-zsh-setup)
 7. [Zellij bedienen: Panes, Tabs, Sessions](#7-zellij-bedienen-panes-tabs-sessions)
 8. [Die Prototypen-Galerie](#8-die-prototypen-galerie)
-9. [Troubleshooting](#9-troubleshooting)
+9. [Das Cloud Design System](#9-das-cloud-design-system)
+10. [GITVIZ · `oat://` · Chat-Werkzeuge](#10-gitviz--oat--chat-werkzeuge)
+11. [Troubleshooting](#11-troubleshooting)
 
 ---
 
@@ -387,7 +389,163 @@ Die drei CDN-Varianten laden Tailwind von `cdn.tailwindcss.com` und brauchen dah
 
 ---
 
-## 9. Troubleshooting
+## 9. Das Cloud Design System
+
+Das Problem, das es löst: Farben lagen vorher an sechs Stellen — im Zellij-Theme,
+in jedem Shell-Skript, in der Präsentation, in jeder Web-UI. Eine Änderung hieß
+sechs Änderungen, und eine davon vergaß man immer.
+
+Jetzt gibt es **genau eine Quelle**: `odysseus/design/tokens.json`.
+
+```bash
+cd odysseus/design
+./build.sh
+```
+
+Daraus entstehen drei Ziele:
+
+| Datei | Für wen | Wie eingebunden |
+|:--|:--|:--|
+| `dist/oat-cloud.css` | eigene Web-Seiten | `<link rel="stylesheet" href="…">` |
+| `dist/oat-tokens.sh` | Shell-Skripte (ANSI-256) | `. design/dist/oat-tokens.sh` → `${OAT_FG_PRIMARY}` |
+| `dist/oat-matrix.kdl` | Zellij | nach `~/.config/zellij/themes/` |
+
+`gitviz.sh`, `uri.sh` und `chat-tools.sh` laden `oat-tokens.sh` wirklich — sie
+haben nur noch eine Fallback-Palette für den Fall, dass `dist/` fehlt. Damit ist
+das Terminal genauso Teil des Design Systems wie eine HTML-Seite.
+
+### Wenn Tokens und CSS auseinanderlaufen
+
+```bash
+./build.sh --check
+```
+
+Prüft, ob jeder Farbwert aus `tokens.json` auch in `css/tokens.css` steht, und
+bricht sonst mit Exit-Code 1 ab. Das gehört in jeden CI-Lauf — sonst schleicht
+sich genau der Zustand wieder ein, den das System verhindern soll.
+
+### Fremde Oberflächen themen
+
+```bash
+odysseus design apply          # alle laufenden Dienste
+odysseus design apply gitea    # einzeln
+odysseus design apply --status # was ist gethemt?
+```
+
+`themes/inject.css` setzt **nur die CSS-Variablen** der jeweiligen UI
+(`--oc-color-*` bei OpenCloud, `--color-primary` bei Nextcloud/Gitea,
+`--surface-*` bei LibreChat). Keine Selektor-Hacks — das überlebt deren
+Updates deutlich besser. OpenCloud bekommt zusätzlich ein echtes `theme.json`.
+
+Ehrlich zu den Grenzen: bei **LibreChat** funktioniert das nicht ohne eigenes
+Image, weil dort das CSS beim Build entsteht. `apply-theme.sh` sagt das auch,
+statt Erfolg zu behaupten.
+
+### Das Styleguide
+
+```bash
+odysseus design styleguide     # oder design/styleguide.html im Browser
+```
+
+Die Farbfelder darin werden aus den **tatsächlich geladenen** CSS-Variablen
+erzeugt — das Styleguide kann also nie vom echten Build abweichen.
+
+---
+
+## 10. GITVIZ · `oat://` · Chat-Werkzeuge
+
+### 10.1 GITVIZ — sehen, was in den Repos passiert
+
+```bash
+odysseus gitviz              # Übersicht (Gitea + lokal)
+odysseus gitviz graph        # Commit-Graph
+odysseus gitviz activity     # Sparkline, 30 Tage
+odysseus gitviz authors      # wer hat wie viel
+odysseus gitviz branches     # ahead/behind zum aktuellen Branch
+odysseus gitviz issues DEVKITZ/odysseus
+```
+
+```
+  ······▂·█······▄▂·············
+  vor 30 Tagen         heute
+
+  47 Commits in 30 Tagen   1.6 pro Tag im Schnitt
+```
+
+Für die Gitea-Seite braucht es einen Token — entweder `GITEA_TOKEN` in der
+`.env` oder, besser, im Vault unter `api/gitea`; `gitviz` zieht ihn still von
+dort. Ohne Token zeigt es öffentliche Repos, ohne Gitea alles Lokale.
+
+Im Terminal ist das der **GITVIZ-Tab**: Graph links, Aktivität und Autoren
+rechts oben, eine `watch`-Ansicht der Repos rechts unten.
+
+### 10.2 `oat://` — Links landen im Terminal
+
+```bash
+odysseus uri install                    # registrieren
+odysseus uri list                       # alles Unterstützte
+odysseus uri test 'oat://gitviz/graph'  # Trockenlauf, führt nichts aus
+```
+
+Danach öffnet ein Klick auf `oat://repo/DEVKITZ/odysseus` in einem Gitea-Issue
+direkt die Repo-Ansicht im Terminal. Unter Linux läuft das über eine
+`.desktop`-Datei und `xdg-mime`, unter Windows über eine erzeugte
+`oat-uri.reg` (WSL + Windows Terminal).
+
+**Warum das restriktiv gebaut ist:** Ein URI-Handler ist eine Tür von außen —
+jede Webseite kann `oat://…` aufrufen, ohne dass jemand zustimmt. Deshalb:
+
+- eine **feste Whitelist** von Aktionen; es gibt bewusst **kein `oat://run/…`**
+- Argumente werden **nach** dem Prozent-Dekodieren geprüft — auf Shell-Metazeichen
+  (`$ ` `` ` `` `;` `|` `&` `>` `<` `\` `'` `"`), auf `..` und auf führende `-`
+- nichts wird je an eine Shell gereicht, alles geht als Argument-Array ans Ziel
+- alles Verändernde (`oat://skills/…`, `oat://vault/…`) fragt vorher nach
+
+Im Test wurden 13 Einschleusungsversuche abgewehrt, darunter prozentkodierte
+(`oat://say?text=hi%3Brm%20-rf%20%2F`) — die sehen harmlos aus, bis sie dekodiert
+sind, und genau deshalb wird erst danach geprüft.
+
+### 10.3 Chat mit Werkzeugen
+
+```bash
+odysseus chat                              # REPL
+odysseus chat ask "Welche Dienste sind unten?"
+odysseus tools list                        # Werkzeuge zeigen
+odysseus tools call git_log '{"limit":5}'  # eines direkt aufrufen
+```
+
+Im Gespräch sieht das so aus:
+
+```
+Operator:~$ Wie viele Commits hatten wir diesen Monat?
+oat:   ⚙ git_activity {}
+47 Commits in 30 Tagen, im Schnitt 1.6 pro Tag. Am aktivsten war der 12.07. mit 4.
+```
+
+Die `⚙`-Zeile ist kein Schmuck — dort läuft wirklich ein Werkzeug, und die
+Antwort steht auf dessen Ausgabe, nicht auf einer Vermutung des Modells.
+
+**12 Werkzeuge**, davon 10 rein lesend. Verändernde sind aus:
+
+```bash
+odysseus tools call a2a_send '{"agent":"coder","message":"x"}'
+# → ABGELEHNT: 'a2a_send' veraendert etwas. Einschalten mit OAT_TOOLS_ALLOW_WRITE=1.
+```
+
+Und selbst freigeschaltet fragen sie nach. `vault_list` gibt **nur Namen** aus,
+niemals Werte — ein Modell, das Schlüssel sehen kann, ist ein Modell, das sie
+weitererzählen kann.
+
+Backend ist Ollama (`/api/chat` mit `tools[]`). Wer die Werkzeuge an einem
+anderen Modell hängen will:
+
+```bash
+odysseus tools schema anthropic > tools.json
+```
+
+---
+
+## 11. Troubleshooting
 
 **`cosmo: command not found`** → `~/.local/bin` fehlt im PATH: `export PATH="$HOME/.local/bin:$PATH"` in die Shell-RC. Unter Windows: neues Terminal öffnen (PATH wird beim Start gelesen).
 

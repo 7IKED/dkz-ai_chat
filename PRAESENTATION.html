@@ -151,8 +151,8 @@
       </p>
       <div style="margin-top:34px; display:flex; gap:26px; flex-wrap:wrap; justify-content:center">
         <div class="stat"><span class="n">3</span><span class="l">Versionen</span></div>
-        <div class="stat"><span class="n">5</span><span class="l">Profile</span></div>
         <div class="stat"><span class="n">11</span><span class="l">Dienste</span></div>
+        <div class="stat"><span class="n">12</span><span class="l">Chat-Werkzeuge</span></div>
         <div class="stat"><span class="n">43</span><span class="l">Skill-Packs</span></div>
       </div>
       <div class="sub" style="margin-top:30px; color:var(--dim)"><span class="blink">▮</span> [ KLICK ODER PFEILTASTE → ]</div>
@@ -240,13 +240,13 @@ $ testlane.sh build <span class="a">"npm run build"</span>
       <div class="tab">V2 // 03</div>
       <div class="tag">GESCHLOSSENES SYSTEM</div>
       <div class="eyebrow">Alles FOSS · alles lokal (127.0.0.1) · alles in einem Gitea</div>
-      <h2><span class="num">02</span>Closed System — Aufbau</h2>
+      <h2><span class="num">02</span>Das geschlossene System</h2>
       <div class="fill grid cols-2" style="align-items:start">
         <div>
-          <pre class="code" style="height:100%"><span class="c">┌─ ODYSSEUS · 127.0.0.1 ───────────┐</span>
+          <pre class="code" style="height:100%"><span class="c">┌─ OPEN AI TERMINAL · 127.0.0.1 ───┐</span>
  <span class="a">GITEA</span> :3300  ◄── A2A-Bus (Webhooks)
    │  Code · Issues · alles hier
- <span class="a">NEXTCLOUD</span> :8081 ──┐
+ <span class="a">OPENCLOUD</span> :9200 ──┐  Apache-2.0
  <span class="a">IMMICH</span> :2283 ◄────┘ Foto-Oberfläche
  <span class="a">nanoCHAT</span> :3080  LibreChat + Ollama
  <span class="a">ATUIN</span> :8888   Logs/History aller Agenten
@@ -254,19 +254,20 @@ $ testlane.sh build <span class="a">"npm run build"</span>
  <span class="a">VAULT</span>  KeePass .kdbx — Agenten-Keys
 <span class="c">└──────────────────────────────────┘</span>
        ▲ Matrix-Terminal (zellij)
-   BRIDGE · BROWSER · GITEA · LOGS</pre>
+ BRIDGE · <span class="a">GITVIZ</span> · <span class="a">CLOUD</span> · GITEA · LOGS</pre>
         </div>
         <div>
           <div class="rowline"><span class="l">Gitea</span><span class="r">MIT · Zentrum + A2A-Webhooks</span></div>
-          <div class="rowline"><span class="l">Nextcloud + Immich</span><span class="r">AGPL · Dateien + Fotos</span></div>
+          <div class="rowline"><span class="l">OpenCloud</span><span class="r">Apache-2.0 · Dateien, ein Go-Binary</span></div>
+          <div class="rowline"><span class="l">Immich</span><span class="r">AGPL · Fotos (liest OpenCloud ro)</span></div>
           <div class="rowline"><span class="l">LibreChat (nanoChat)</span><span class="r">MIT · Chat + A2A-Inbox</span></div>
-          <div class="rowline"><span class="l">Atuin</span><span class="r">MIT · History-Sync</span></div>
-          <div class="rowline"><span class="l">Piper Voicebox</span><span class="r">MIT · Text→Sprache</span></div>
-          <div class="rowline"><span class="l">KeePassXC Vault</span><span class="r">GPL · Agenten-Zugangsdaten</span></div>
+          <div class="rowline"><span class="l">Atuin · Piper · KeePassXC</span><span class="r">MIT · MIT · GPL</span></div>
+          <div class="rowline"><span class="l">Nextcloud</span><span class="r">AGPL · optional (--profile)</span></div>
+          <p class="sub"><b>Warum OpenCloud:</b> ein Go-Binary statt PHP+Apache, kein eigener
+          DB-Container, offizieller Theme-Mechanismus — dadurch trägt das Design System dort sauber.
+          POSIX-Speicher, damit Immich die Dateien als normalen Baum liest.</p>
           <p class="sub">Agenten holen ihre API-Keys <b>nur</b> aus dem Vault:
-          <br><span class="accent">eval "$(odysseus vault agent-env api/xai)"</span>
-          <br>— keine Klartext-Keys in Env-Dateien.</p>
-          <p class="sub">Nach Setup: alle Registrierungen zu → kein Internet mehr nötig.</p>
+          <br><span class="accent">eval "$(odysseus vault agent-env api/xai)"</span></p>
         </div>
       </div>
     </div>
@@ -335,13 +336,111 @@ $ <span class="a">odysseus skills</span> --all-registry   <span class="c"># 43 P
     </div>
   </section>
 
-  <!-- 7 AUFBAU -->
+  <!-- 7 DESIGN SYSTEM -->
   <section class="slide">
     <div class="pane">
-      <div class="tab">AUFBAU // 06</div>
+      <div class="tab">DESIGN // 06</div>
+      <div class="tag">EIN TOKEN-SATZ</div>
+      <div class="eyebrow">Terminal und Web sehen gleich aus — weil sie dieselbe Quelle lesen</div>
+      <h2><span class="num">05</span>Cloud Design System</h2>
+      <div class="fill grid cols-2" style="align-items:start">
+        <div>
+          <pre class="code">design/<span class="a">tokens.json</span>   <span class="c">65 Tokens — die einzige</span>
+      │              <span class="c">Stelle mit Farben</span>
+      ▼ <span class="a">build.sh</span>
+  ├─ dist/oat-cloud.css    <span class="c">Web</span>
+  ├─ dist/oat-tokens.sh    <span class="c">Shell (ANSI-256)</span>
+  └─ dist/oat-matrix.kdl   <span class="c">Zellij-Theme</span>
+
+themes/<span class="a">inject.css</span> ─► OpenCloud · Gitea
+                    Nextcloud · LibreChat
+
+$ odysseus design <span class="a">check</span>
+<span class="w">✔</span> 65 Tokens · 60 CSS-Variablen · Abgleich grün</pre>
+          <p class="sub">Wer eine Farbe ändert, ändert sie in <b>tokens.json</b> — Terminal,
+          Zellij und alle Web-UIs ziehen mit. <span class="accent">design check</span> bricht ab,
+          wenn CSS und Tokens auseinanderlaufen.</p>
+        </div>
+        <div>
+          <div class="k" style="color:var(--dim);letter-spacing:2px;font-size:12px;margin-bottom:10px">ENTWURFSREGELN</div>
+          <ul class="list">
+            <li><b>Eckig</b> — <span>radius 0, Terminal-Look</span></li>
+            <li><b>Eine Schrift</b> — <span>monospace, Hierarchie über Größe</span></li>
+            <li><b>Fließtext ist nicht neon</b> — <span>#e5e7eb; Grün für Titel &amp; Zustände</span></li>
+            <li><b>Kontrast belegt</b> — <span>#00FF41 auf Schwarz = 15.3:1 (AAA)</span></li>
+            <li><b>CRT ist Dekoration</b> — <span>aus bei prefers-contrast/reduced-motion</span></li>
+          </ul>
+          <div class="k" style="color:var(--dim);letter-spacing:2px;font-size:12px;margin:20px 0 10px">FREMD-UIs</div>
+          <p class="sub">Gethemt wird über die <b>CSS-Variablen</b> der jeweiligen UI —
+          keine Selektor-Hacks. Das überlebt ihre Updates.
+          OpenCloud bekommt zusätzlich ein echtes <span class="accent">theme.json</span>.</p>
+          <p class="sub"><span class="ok white">Geprüft:</span> Build läuft, das erzeugte Zellij-Theme
+          wurde von <b>zellij 0.44.3</b> akzeptiert.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 DIE DREI WERKZEUGE -->
+  <section class="slide">
+    <div class="pane">
+      <div class="tab">WERKZEUGE // 07</div>
+      <div class="tag">GITVIZ · oat:// · CHAT-TOOLS</div>
+      <div class="eyebrow">Was das Terminal jetzt zusätzlich kann</div>
+      <h2><span class="num">06</span>Sehen · Springen · Fragen</h2>
+      <div class="fill grid cols-3">
+        <div class="card">
+          <span class="badge">SEHEN</span>
+          <div class="k">gitviz</div>
+          <div class="t">Repo-Visualisierung</div>
+          <pre class="code" style="margin:10px 0 8px;font-size:11px">······▂·█······▄▂·····
+<span class="c">vor 30 Tagen    heute</span>
+Claude  <span class="a">██████████</span> 8
+777     <span class="a">███</span>        1</pre>
+          <div class="d">Commit-Graph, Aktivitäts-Sparkline, Autoren-Balken, Branches mit
+          ahead/behind — dazu alle Repos aus der <b>Gitea-API</b>.</div>
+        </div>
+        <div class="card">
+          <span class="badge">SPRINGEN</span>
+          <div class="k">oat://</div>
+          <div class="t">URI-Handler</div>
+          <pre class="code" style="margin:10px 0 8px;font-size:11px"><span class="a">oat://</span>repo/DEVKITZ/odysseus
+<span class="a">oat://</span>gitviz/activity
+<span class="a">oat://</span>cloud/Projekte
+<span class="a">oat://</span>chat/coder</pre>
+          <div class="d">Ein Link aus Gitea, Chat oder einer Notiz öffnet die Stelle
+          <b>im Terminal</b>. Linux via <span class="accent">.desktop</span>, Windows via
+          <span class="accent">.reg</span> (WSL).</div>
+        </div>
+        <div class="card">
+          <span class="badge">FRAGEN</span>
+          <div class="k">chat-tools</div>
+          <div class="t">Chat mit Werkzeugen</div>
+          <pre class="code" style="margin:10px 0 8px;font-size:11px">$ odysseus chat
+<span class="w">◦</span> Welche Dienste sind unten?
+  <span class="c">⚙ system_status</span>
+<span class="a">IMMICH und VOICEBOX sind aus.</span></pre>
+          <div class="d"><b>12 Werkzeuge</b> — 10 lesen (Status, Repos, Cloud, Skills, Vault-Namen),
+          2 verändern und sind <b>standardmäßig aus</b>.</div>
+        </div>
+      </div>
+      <p class="sub" style="margin-top:18px">
+        <span class="warn">Sicherheit ist Teil des Entwurfs:</span> Der URI-Handler hat eine feste
+        Whitelist — es gibt <b>kein <span class="accent">oat://run/…</span></b>. Argumente werden nach dem
+        Dekodieren gegen Shell-Metazeichen, <span class="accent">..</span> und führende
+        <span class="accent">-</span> geprüft; nichts geht je durch eine Shell. Dasselbe gilt für
+        Werkzeug-Argumente. <span class="ok white">13 Einschleusungsversuche im Test abgewehrt.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- 9 AUFBAU -->
+  <section class="slide">
+    <div class="pane">
+      <div class="tab">AUFBAU // 08</div>
       <div class="tag">STRUKTUR</div>
       <div class="eyebrow">Wie das Repository zusammengesetzt ist</div>
-      <h2><span class="num">05</span>Der Aufbau</h2>
+      <h2><span class="num">07</span>Der Aufbau</h2>
       <div class="fill grid cols-2" style="align-items:start">
         <div>
           <pre class="code">dkz-ai_chat/
@@ -351,21 +450,27 @@ $ <span class="a">odysseus skills</span> --all-registry   <span class="c"># 43 P
 │   └── install.sh · install.ps1
 ├── <span class="a">odysseus/</span>      V2 + V3
 │   ├── docker-compose.yml <span class="c">(11)</span>
-│   ├── scripts · skills · config
+│   ├── <span class="a">design/</span> <span class="c">tokens · css · themes</span>
+│   ├── scripts/ <span class="c">gitviz · uri</span>
+│   │            <span class="c">chat-tools · vault …</span>
+│   ├── skills/ <span class="c">registry (43 Packs)</span>
 │   └── exe/ <span class="c">→ dist/*.exe</span>
 ├── <span class="a">prototypes/</span>    5 HTML + Galerie
-├── README · TUTORIAL
-└── PRAESENTATION.html <span class="c">(hier)</span></pre>
+└── README · TUTORIAL · PRAESENTATION</pre>
         </div>
         <div>
           <div class="k" style="color:var(--dim);letter-spacing:2px;font-size:12px;margin-bottom:10px">TECH-STACK</div>
           <div class="rowline"><span class="l">Multiplexer</span><span class="r">Zellij · KDL · zsh · zinit</span></div>
           <div class="rowline"><span class="l">Prompt / Tools</span><span class="r">starship · fzf · zoxide · eza</span></div>
-          <div class="rowline"><span class="l">System</span><span class="r">Docker Compose · 11 Services</span></div>
+          <div class="rowline"><span class="l">System</span><span class="r">Docker Compose · 11 Dienste</span></div>
+          <div class="rowline"><span class="l">Cloud</span><span class="r">OpenCloud (Go) · POSIX-Speicher</span></div>
+          <div class="rowline"><span class="l">Design</span><span class="r">tokens.json → CSS · Shell · KDL</span></div>
+          <div class="rowline"><span class="l">Werkzeuge</span><span class="r">Bash + python3 — sonst nichts</span></div>
           <div class="rowline"><span class="l">Single-File</span><span class="r">Go (embed, Stdlib)</span></div>
-          <div class="rowline"><span class="l">Design</span><span class="r">Matrix · #00FF41 / #008F11</span></div>
           <div class="rowline"><span class="l">Ziele</span><span class="r">Windows · Linux · Docker</span></div>
-          <p class="sub">Jedes Pane defensiv (<span class="accent">btop || htop || top</span>) — bricht auf Minimalsystemen &amp; in Containern nicht ab.</p>
+          <p class="sub">Keine Laufzeit-Abhängigkeit außer <b>bash</b> und <b>python3</b> — kein npm,
+          kein Build-Schritt. Jedes Pane defensiv (<span class="accent">btop || htop || top</span>),
+          bricht auf Minimalsystemen &amp; in Containern nicht ab.</p>
         </div>
       </div>
     </div>
@@ -374,45 +479,58 @@ $ <span class="a">odysseus skills</span> --all-registry   <span class="c"># 43 P
   <!-- 8 STATUS -->
   <section class="slide">
     <div class="pane">
-      <div class="tab">STATUS // 07</div>
+      <div class="tab">STATUS // 09</div>
       <div class="tag">VERIFIZIERT</div>
       <div class="eyebrow">Nicht behauptet — ausgeführt</div>
-      <h2><span class="num">06</span>Was bewiesen ist</h2>
+      <h2><span class="num">08</span>Was bewiesen ist</h2>
       <div class="fill grid cols-2" style="align-items:start">
         <div>
           <ul class="list">
-            <li class="white"><span class="ok"></span>zellij 0.44.3 gebaut · Config-Check bestanden</li>
-            <li class="white"><span class="ok"></span>alle 5 Profile + Odysseus als echte Sessions gestartet</li>
+            <li class="white"><span class="ok"></span>zellij 0.44.3 · Config-Check bestanden</li>
+            <li class="white"><span class="ok"></span>alle 5 Profile + das 5-Tab-Terminal als echte Sessions gestartet</li>
             <li class="white"><span class="ok"></span>Zsh mit allen Plugins · <b>~103 ms</b> Start</li>
-            <li class="white"><span class="ok"></span>Teststrasse: pass/fail + Exit-Code + JSONL</li>
+            <li class="white"><span class="ok"></span>docker-compose: 11 Dienste valide, Profil <span>nextcloud</span> greift</li>
+            <li class="white"><span class="ok"></span>beide Binaries gebaut · Linux end-to-end</li>
+            <li class="white"><span class="ok"></span>Skill-Import real · 43 Packs per GitHub-API geprüft</li>
           </ul>
         </div>
         <div>
           <ul class="list">
-            <li class="white"><span class="ok"></span>docker-compose: 11 Services valide</li>
-            <li class="white"><span class="ok"></span>beide Binaries gebaut · Linux end-to-end</li>
-            <li class="white"><span class="ok"></span>Skill-Import real (7iked/skills 39 · superpowers 14)</li>
-            <li class="white"><span class="ok"></span>43 Registry-Packs per GitHub-API geprüft</li>
+            <li class="white"><span class="ok"></span>Design-Build: 65 Tokens · 60 CSS-Variablen · Abgleich grün</li>
+            <li class="white"><span class="ok"></span>erzeugtes Zellij-Theme von zellij <b>akzeptiert</b></li>
+            <li class="white"><span class="ok"></span>GITVIZ gegen dieses Repo gelaufen (Graph · Sparkline · Autoren)</li>
+            <li class="white"><span class="ok"></span>Chat-Werkzeuge <b>end-to-end</b>: Modell fordert <span>git_log</span> an → Werkzeug läuft → Antwort mit echten Commit-Daten</li>
+            <li class="white"><span class="ok"></span><b>13 Einschleusungsversuche</b> in URI + Werkzeuge abgewehrt</li>
+            <li class="white"><span class="ok"></span>Installation in leeres Ziel: Launcher · dist/ · .env</li>
           </ul>
         </div>
       </div>
-      <p class="sub"><span class="warn">⚠ Offen:</span> GitHub-Push &amp; Repo-Anlage sind durch fehlende Schreibrechte der GitHub-App blockiert (403). Alle 5 Commits liegen fertig; Auslieferung per ZIP, Patch &amp; Drive.</p>
+      <p class="sub"><span class="warn">⚠ Offen:</span> Container laufen hier nicht — die Registry ist in dieser
+      Umgebung gesperrt, also sind OpenCloud selbst und <span class="accent">design apply</span> nur
+      konfigurationsgeprüft, nicht im Betrieb. Der GitHub-Push scheitert weiterhin an fehlenden
+      Schreibrechten der GitHub-App (403); Auslieferung per ZIP, Patch &amp; Drive.</p>
     </div>
   </section>
 
   <!-- 9 CLOSE -->
   <section class="slide">
     <div class="pane" style="align-items:center; justify-content:center; text-align:center">
-      <div class="tab">START // 08</div>
+      <div class="tab">START // 10</div>
       <div class="tag">SYS_READY</div>
-      <div class="eyebrow">In drei Zeilen loslegen</div>
+      <div class="eyebrow">In wenigen Zeilen loslegen</div>
       <h2 style="margin-bottom:22px">So startest du</h2>
-      <pre class="code" style="text-align:left; max-width:640px; width:100%">$ <span class="a">cosmo</span> desktop        <span class="c"># V1 — sofort</span>
-$ <span class="a">odysseus</span> up &amp;&amp; odysseus  <span class="c"># V2 — geschlossenes System</span>
-$ ./<span class="a">odysseus.exe</span>          <span class="c"># V3 — eine Datei</span></pre>
+      <pre class="code" style="text-align:left; max-width:680px; width:100%">$ <span class="a">cosmo</span> desktop              <span class="c"># V1 — sofort</span>
+$ <span class="a">odysseus</span> up &amp;&amp; odysseus     <span class="c"># V2 — geschlossenes System</span>
+$ ./<span class="a">odysseus.exe</span>              <span class="c"># V3 — eine Datei</span>
+
+$ odysseus <span class="a">design</span> apply       <span class="c"># Matrix-Look in die Web-UIs</span>
+$ odysseus <span class="a">gitviz</span>             <span class="c"># Repos sichtbar</span>
+$ odysseus <span class="a">uri</span> install        <span class="c"># oat:// im System</span>
+$ odysseus <span class="a">chat</span>               <span class="c"># Chat mit Werkzeugen</span></pre>
       <p class="sub" style="margin-inline:auto">
-        Multiplexer · Odysseus · Single-File · Skill-Importer — eine
-        zusammenhängende Matrix-Terminal-Umgebung für Windows, Linux und Docker.
+        Multiplexer · geschlossenes System · Single-File · Skill-Importer ·
+        Design System · Repo-Visualisierung · URI-Handler · Chat-Werkzeuge —
+        eine zusammenhängende Terminal-Umgebung für Windows, Linux und Docker.
       </p>
       <div class="brand" style="margin-top:30px; font-size:15px">DEVKiTZ™ ECOSYSTEM &nbsp;·&nbsp; OPEN AI TERMINAL</div>
       <div class="sub" style="color:var(--dim); margin-top:6px">MIT © DEVKiTZ — Komponenten unter ihren freien Lizenzen</div>
@@ -428,7 +546,7 @@ $ ./<span class="a">odysseus.exe</span>          <span class="c"># V3 — eine D
   <span><span class="key">F</span> vollbild</span>
   <span class="spacer"></span>
   <div class="dots" id="dots"></div>
-  <span class="count"><span id="cur">01</span> / <span id="tot">09</span></span>
+  <span class="count"><span id="cur">01</span> / <span id="tot">11</span></span>
 </div>
 
 <script>
