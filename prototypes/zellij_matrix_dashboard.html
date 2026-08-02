@@ -319,6 +319,10 @@
             }
         });
 
+        // printLog nimmt bewusst Markup entgegen (<br/>, &nbsp;, <span>) — alles,
+        // was aus einer Eingabe oder aus dem DOM stammt, MUSS vorher durch esc().
+        function esc(s) { const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+
         function printLog(text, isError = false) {
             const div = document.createElement('div');
             div.className = isError ? 'text-red-500 text-shadow-none' : 'text-[#00FF41] matrix-text';
@@ -346,7 +350,7 @@
                     break;
                 case 'status':
                     printLog(">> SYSTEM STATUS <<");
-                    printLog(`CPU: ${document.getElementById('cpu-val').innerText} | MEM: ${document.getElementById('mem-val').innerText}`);
+                    printLog(`CPU: ${esc(document.getElementById('cpu-val').innerText)} | MEM: ${esc(document.getElementById('mem-val').innerText)}`);
                     printLog("Netzwerk: ONLINE");
                     printLog("Firewall: WACHSAM");
                     break;
@@ -358,7 +362,7 @@
                     break;
                 case 'nav':
                     if(args[1]) {
-                        printLog(`Navigiere zu Modul: ${args[1]}... Zugriff gewährt.`);
+                        printLog(`Navigiere zu Modul: ${esc(args[1])}... Zugriff gewährt.`);
                     } else {
                         printLog("Fehler: Zielmodul fehlt. Syntax: nav [ziel]", true);
                     }
@@ -366,14 +370,14 @@
                 case '':
                     break; // Leere Eingabe ignorieren
                 default:
-                    printLog(`gsh: command not found: ${baseCmd}`, true);
+                    printLog(`gsh: command not found: ${esc(baseCmd)}`, true);
             }
         }
 
         gshInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 const cmd = this.value;
-                printLog(`<span class="text-[#008F11]">root@gsh:~#</span> ${cmd}`);
+                printLog(`<span class="text-[#008F11]">root@gsh:~#</span> ${esc(cmd)}`);
                 handleCommand(cmd);
                 this.value = ''; // Input leeren
             }

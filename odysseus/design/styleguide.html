@@ -202,15 +202,24 @@ const groups = {
   'sg-state': ['ok','warn','error','info'],
 };
 const cs = getComputedStyle(document.documentElement);
+const el = (tag, cls, text) => {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;   // nie innerHTML — der Wert
+  return e;                                       // kommt aus dem DOM
+};
 for (const [id, names] of Object.entries(groups)) {
   const host = document.getElementById(id);
-  host.innerHTML = names.map(n => {
+  host.replaceChildren(...names.map(n => {
     const v = cs.getPropertyValue('--oat-' + n).trim();
-    return `<div class="sg-swatch">
-      <div class="sg-swatch__chip" style="background:${v}"></div>
-      <div class="sg-swatch__meta"><span>--oat-${n}</span><code>${v}</code></div>
-    </div>`;
-  }).join('');
+    const sw   = el('div', 'sg-swatch');
+    const chip = el('div', 'sg-swatch__chip');
+    chip.style.background = v;                    // Style-Setter, kein Markup
+    const meta = el('div', 'sg-swatch__meta');
+    meta.append(el('span', null, '--oat-' + n), el('code', null, v));
+    sw.append(chip, meta);
+    return sw;
+  }));
 }
 // Tabs schaltbar machen (Demo)
 document.querySelectorAll('[role="tab"]').forEach(t => t.addEventListener('click', () => {

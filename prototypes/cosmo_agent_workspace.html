@@ -362,10 +362,13 @@
         const chatInput = document.getElementById('chat-input');
         const chatOutput = document.getElementById('chat-output');
 
+        // Alles, was aus einer Eingabe stammt, wird escaped bevor es Markup wird.
+        function esc(s) { const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+
         function printChat(sender, msg, colorClass) {
             const div = document.createElement('div');
             div.className = `mt-1 ${colorClass}`;
-            div.innerHTML = `<span class="font-bold">${sender}:</span> ${msg}`;
+            div.innerHTML = `<span class="font-bold">${esc(sender)}:</span> ${esc(msg)}`;
             chatOutput.appendChild(div);
             chatOutput.scrollTop = chatOutput.scrollHeight;
         }
@@ -404,7 +407,7 @@
                 // Add to list dynamically
                 const div = document.createElement('div');
                 div.className = "flex justify-between border-b border-[#008F11]/30 pb-1 text-[#00FF41] blink";
-                div.innerHTML = `<span class="text-white">HOOK ${url}</span><span>DEPLOYED</span>`;
+                div.innerHTML = `<span class="text-white">HOOK ${esc(url)}</span><span>DEPLOYED</span>`;
                 
                 webhookList.prepend(div);
                 
@@ -412,7 +415,7 @@
                 setTimeout(() => {
                     div.classList.remove('blink', 'text-[#00FF41]');
                     div.classList.add('text-gray-400');
-                    div.innerHTML = `<span class="text-gray-400">HOOK ${url}</span><span class="text-[#00FF41]">ACTIVE</span>`;
+                    div.innerHTML = `<span class="text-gray-400">HOOK ${esc(url)}</span><span class="text-[#00FF41]">ACTIVE</span>`;
                 }, 2000);
             }
         });
