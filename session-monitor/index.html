@@ -1,0 +1,416 @@
+<!-- @DKZ:RULES → Lies REGELWERK.md + ORDNER.ini bevor du hier arbeitest! -->
+<!-- @DKZ:DOCS  → features.json (MOD-021) | REGISTRY.json | BLAUPAUSE.md -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛰️ Claude Session Monitor — DkZ™</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg:#060608; --card:#111114; --card2:#1a1a1e; --card3:#222226;
+    --border:#2a2a30; --text:#f0f0f2; --muted:#8888a0;
+    --accent:#fa1e4e; --green:#00ff88; --blue:#4488ff;
+    --yellow:#ffb800; --purple:#a855f7; --cyan:#06b6d4; --orange:#ff6b35;
+    --radius:14px; --radius-sm:8px;
+    --font:'Inter',-apple-system,sans-serif; --mono:'JetBrains Mono',monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box }
+body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh }
+.bg-ambient { position:fixed; inset:0; pointer-events:none; z-index:0;
+    background: radial-gradient(ellipse 600px 400px at 15% 20%, rgba(250,30,78,.05) 0%, transparent 70%),
+                radial-gradient(ellipse 500px 500px at 85% 80%, rgba(68,136,255,.03) 0%, transparent 70%) }
+.wrap { position:relative; z-index:1; max-width:1400px; margin:0 auto; padding:0 20px 60px }
+
+.header { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    padding:14px 20px; margin:0 -20px 22px; background:rgba(17,17,20,.85); backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border); position:sticky; top:0; z-index:20 }
+.header h1 { font-size:1.05rem; font-weight:700; letter-spacing:-.02em }
+.header .v { color:var(--muted); font-size:.72rem; font-family:var(--mono) }
+.header .gen { color:var(--muted); font-size:.7rem; font-family:var(--mono) }
+
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:24px }
+.stat { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px }
+.stat .n { font-size:1.5rem; font-weight:800; letter-spacing:-.02em; font-family:var(--mono) }
+.stat .l { font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; margin-top:3px; font-weight:600 }
+.stat.alert .n { color:var(--accent) }
+.stat.ok .n { color:var(--green) }
+
+h2 { font-size:.82rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted);
+    margin:30px 0 12px; font-weight:700; display:flex; align-items:center; gap:8px }
+h2::after { content:''; flex:1; height:1px; background:var(--border) }
+
+.panel { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; overflow:hidden }
+
+/* ═══ Timeline / Swimlanes ═══ */
+.axis { position:relative; height:20px; margin:0 0 6px 190px; border-bottom:1px solid var(--border) }
+.axis span { position:absolute; top:0; transform:translateX(-50%); font-size:.62rem; color:var(--muted);
+    font-family:var(--mono); white-space:nowrap }
+.lane { display:flex; align-items:center; gap:10px; margin-bottom:7px }
+.lane-label { width:180px; flex:none; font-size:.7rem; font-family:var(--mono); color:var(--muted);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.lane-label b { color:var(--text); font-weight:600 }
+.lane-track { position:relative; flex:1; height:26px; background:rgba(255,255,255,.02);
+    border-radius:var(--radius-sm); border:1px solid var(--border) }
+.bar { position:absolute; top:3px; bottom:3px; border-radius:5px; cursor:pointer; min-width:3px;
+    display:flex; align-items:center; padding:0 7px; font-size:.62rem; font-weight:600;
+    color:#fff; overflow:hidden; white-space:nowrap; transition:filter .15s, transform .15s }
+.bar:hover { filter:brightness(1.25); transform:scaleY(1.12) }
+.bar.par { box-shadow:0 0 0 1.5px var(--yellow) }
+.legend { display:flex; gap:14px; flex-wrap:wrap; margin-top:14px; font-size:.68rem; color:var(--muted) }
+.legend i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px }
+
+/* ═══ Session cards ═══ */
+.cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:14px }
+.card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px;
+    transition:border-color .18s, transform .18s }
+.card:hover { border-color:#3a3a44; transform:translateY(-2px) }
+.card .top { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px }
+.card .sid { font-family:var(--mono); font-size:.8rem; font-weight:700 }
+.card .prompt { font-size:.75rem; color:var(--muted); line-height:1.5; margin:10px 0;
+    border-left:2px solid var(--border); padding-left:9px }
+.kv { display:grid; grid-template-columns:auto 1fr; gap:4px 10px; font-size:.72rem; margin-top:10px }
+.kv dt { color:var(--muted) }
+.kv dd { font-family:var(--mono); word-break:break-all }
+.chip { display:inline-block; padding:2px 7px; border-radius:5px; font-size:.62rem; font-weight:700;
+    font-family:var(--mono); margin:2px 3px 0 0 }
+.chip-branch { background:rgba(168,85,247,.14); color:var(--purple) }
+.chip-model { background:rgba(68,136,255,.12); color:var(--blue) }
+.chip-tool { background:rgba(255,255,255,.06); color:var(--muted) }
+.chip-err { background:rgba(250,30,78,.15); color:var(--accent) }
+.chip-live { background:rgba(0,255,136,.13); color:var(--green) }
+
+/* ═══ Git graph ═══ */
+.repo { margin-bottom:18px }
+.repo-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px }
+.repo-head .name { font-family:var(--mono); font-weight:700; font-size:.85rem }
+.graph { position:relative; display:flex }
+.graph svg { flex:none }
+.rows { flex:1; min-width:0 }
+.crow { height:34px; display:flex; align-items:center; gap:10px; padding:0 4px; border-radius:6px }
+.crow:hover { background:rgba(255,255,255,.03) }
+.crow .sha { font-family:var(--mono); font-size:.7rem; color:var(--yellow); flex:none }
+.crow .subj { font-size:.75rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; min-width:0 }
+.crow .meta { font-size:.65rem; color:var(--muted); font-family:var(--mono); flex:none }
+
+.empty { text-align:center; padding:50px 20px; color:var(--muted) }
+.empty code { background:var(--card2); padding:3px 8px; border-radius:5px; font-family:var(--mono);
+    font-size:.78rem; color:var(--green); display:inline-block; margin-top:10px }
+.note { font-size:.72rem; color:var(--muted); margin-top:10px; line-height:1.6 }
+
+#tip { position:fixed; z-index:50; pointer-events:none; opacity:0; transition:opacity .12s;
+    background:var(--card2); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:9px 12px; font-size:.72rem; max-width:320px; box-shadow:0 8px 30px rgba(0,0,0,.55) }
+#tip b { font-family:var(--mono) }
+</style>
+</head>
+<body>
+<div class="bg-ambient"></div>
+<div class="wrap">
+
+<div class="header">
+    <div>
+        <h1>🛰️ Claude Session Monitor</h1>
+        <span class="v">DkZ™ · parallele Claude-Code-Chats + Git-Historie</span>
+    </div>
+    <span class="gen" id="genAt"></span>
+</div>
+
+<div id="app"></div>
+
+</div>
+<div id="tip"></div>
+
+<script src="sessions-data.js" onerror="window.__dataMissing=true"></script>
+<script>
+const DATA = window.DKZ_SESSIONS || null;
+const app = document.getElementById('app');
+const tip = document.getElementById('tip');
+
+// Farben pro Projekt — stabil zugewiesen, damit ein Projekt ueber Reloads dieselbe Farbe behaelt.
+const PALETTE = ['#fa1e4e','#4488ff','#00ff88','#a855f7','#ffb800','#06b6d4','#ff6b35','#ec4899'];
+const colorOf = (() => {
+    const map = new Map();
+    return name => {
+        if (!map.has(name)) map.set(name, PALETTE[map.size % PALETTE.length]);
+        return map.get(name);
+    };
+})();
+
+function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g,
+        c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function fmtNum(n) { return (n || 0).toLocaleString('de-DE'); }
+
+function fmtDur(sec) {
+    if (sec == null) return '—';
+    if (sec < 60) return sec + 's';
+    if (sec < 3600) return Math.round(sec / 60) + 'm';
+    if (sec < 86400) return (sec / 3600).toFixed(1) + 'h';
+    return (sec / 86400).toFixed(1) + 'd';
+}
+
+function fmtDate(iso, withTime) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    const date = d.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit', year:'2-digit' });
+    return withTime ? date + ' ' + d.toLocaleTimeString('de-DE', { hour:'2-digit', minute:'2-digit' }) : date;
+}
+
+function showTip(html, ev) {
+    tip.innerHTML = html;
+    tip.style.opacity = '1';
+    const pad = 14;
+    let x = ev.clientX + pad, y = ev.clientY + pad;
+    const r = tip.getBoundingClientRect();
+    if (x + r.width > innerWidth) x = ev.clientX - r.width - pad;
+    if (y + r.height > innerHeight) y = ev.clientY - r.height - pad;
+    tip.style.left = x + 'px';
+    tip.style.top = y + 'px';
+}
+function hideTip() { tip.style.opacity = '0'; }
+
+/* ═══════════ Stats ═══════════ */
+function renderStats(d) {
+    const s = d.sessions;
+    const parallel = s.filter(x => x.parallelWith.length).length;
+    const errors = s.reduce((a, x) => a + x.errors.length, 0);
+    const tokens = s.reduce((a, x) => a + x.totalTokens, 0);
+    const projects = new Set(s.map(x => x.project).filter(Boolean)).size;
+    const branches = new Set(s.map(x => x.branch).filter(Boolean)).size;
+
+    const cells = [
+        { n: s.length,        l: 'Sessions' },
+        { n: projects,        l: 'Projekte' },
+        { n: branches,        l: 'Git-Branches' },
+        { n: parallel,        l: 'davon parallel', cls: parallel ? 'ok' : '' },
+        { n: fmtNum(tokens),  l: 'Tokens gesamt' },
+        { n: errors,          l: 'API-Fehler', cls: errors ? 'alert' : '' },
+    ];
+    return '<div class="stats">' + cells.map(c =>
+        `<div class="stat ${c.cls || ''}"><div class="n">${esc(c.n)}</div><div class="l">${esc(c.l)}</div></div>`
+    ).join('') + '</div>';
+}
+
+/* ═══════════ Timeline ═══════════ */
+function renderTimeline(d) {
+    const rows = d.sessions.filter(s => s.start && s.end);
+    if (!rows.length) return '';
+
+    const min = Math.min(...rows.map(s => +new Date(s.start)));
+    const max = Math.max(...rows.map(s => +new Date(s.end)));
+    const span = Math.max(max - min, 1);
+    const pct = t => ((t - min) / span) * 100;
+
+    // Achsen-Ticks: 5 gleichmaessige Schritte ueber den Gesamtzeitraum.
+    // Erstes/letztes Label buendig ausrichten, sonst ragt es ueber den Panel-Rand hinaus.
+    let axis = '';
+    for (let i = 0; i <= 5; i++) {
+        const t = min + (span * i) / 5;
+        const shift = i === 0 ? '0' : i === 5 ? '-100%' : '-50%';
+        axis += `<span style="left:${(i / 5) * 100}%;transform:translateX(${shift})">`
+              + `${esc(fmtDate(new Date(t).toISOString(), span < 2 * 864e5))}</span>`;
+    }
+
+    const lanes = rows.map(s => {
+        const left = pct(+new Date(s.start));
+        const width = Math.max(pct(+new Date(s.end)) - left, 0.4);
+        const col = colorOf(s.project || 'unbekannt');
+        const par = s.parallelWith.length ? ' par' : '';
+        const label = `${esc(s.short)} · ${esc(s.branch || '—')}`;
+        const info = [
+            `<b>${esc(s.short)}</b> · ${esc(s.project || '—')}`,
+            `Branch: ${esc(s.branch || '—')}`,
+            `${fmtDate(s.start, true)} → ${fmtDate(s.end, true)} (${fmtDur(s.durationSec)})`,
+            `${s.userTurns} Prompts · ${s.assistantTurns} Antworten · ${fmtNum(s.totalTokens)} Tokens`,
+            s.parallelWith.length ? `⚡ parallel mit: ${esc(s.parallelWith.join(', '))}` : '',
+            s.errors.length ? `⚠️ ${s.errors.length} API-Fehler` : '',
+        ].filter(Boolean).join('<br>');
+
+        return `<div class="lane">
+            <div class="lane-label"><b>${esc(s.short)}</b><br>${esc(s.project || '—')}</div>
+            <div class="lane-track">
+                <div class="bar${par}" style="left:${left}%;width:${width}%;background:${col}"
+                     data-tip="${esc(info)}">${label}</div>
+            </div>
+        </div>`;
+    }).join('');
+
+    const projects = [...new Set(rows.map(s => s.project || 'unbekannt'))];
+    const legend = projects.map(p =>
+        `<span><i style="background:${colorOf(p)}"></i>${esc(p)}</span>`
+    ).join('') + '<span><i style="background:transparent;box-shadow:0 0 0 1.5px var(--yellow)"></i>parallel aktiv</span>';
+
+    return `<h2>⏱️ Zeitachse — parallele Sessions</h2>
+    <div class="panel">
+        <div class="axis">${axis}</div>
+        ${lanes}
+        <div class="legend">${legend}</div>
+    </div>`;
+}
+
+/* ═══════════ Session cards ═══════════ */
+function renderSessions(d) {
+    if (!d.sessions.length) return '';
+    const cards = d.sessions.map(s => {
+        const tools = Object.entries(s.tools).slice(0, 6)
+            .map(([n, c]) => `<span class="chip chip-tool">${esc(n)}·${c}</span>`).join('');
+        const models = s.models.map(m => `<span class="chip chip-model">${esc(m)}</span>`).join('');
+        const errs = s.errors.length
+            ? `<span class="chip chip-err">${s.errors.length}× HTTP ${esc(s.errors.map(e => e.status).join('/'))}</span>` : '';
+        const par = s.parallelWith.length
+            ? `<span class="chip chip-live">⚡ ${esc(s.parallelWith.join(' '))}</span>` : '';
+
+        return `<div class="card" style="border-left:3px solid ${colorOf(s.project || 'unbekannt')}">
+            <div class="top">
+                <span class="sid">${esc(s.short)}</span>
+                <span class="chip chip-branch">${esc(s.branch || 'kein Branch')}</span>
+            </div>
+            ${s.firstPrompt ? `<div class="prompt">${esc(s.firstPrompt)}</div>` : ''}
+            <dl class="kv">
+                <dt>Projekt</dt><dd>${esc(s.project || '—')}</dd>
+                <dt>Laufzeit</dt><dd>${esc(fmtDate(s.start, true))} → ${esc(fmtDur(s.durationSec))}</dd>
+                <dt>Turns</dt><dd>${s.userTurns} ↔ ${s.assistantTurns}</dd>
+                <dt>Tokens</dt><dd>${esc(fmtNum(s.totalTokens))}</dd>
+                ${s.sidechain ? `<dt>Subagenten</dt><dd>${s.sidechain} Zeilen</dd>` : ''}
+                ${s.version ? `<dt>CLI</dt><dd>${esc(s.version)}</dd>` : ''}
+            </dl>
+            <div style="margin-top:10px">${models}${errs}${par}</div>
+            <div style="margin-top:4px">${tools}</div>
+        </div>`;
+    }).join('');
+    return `<h2>💬 Sessions</h2><div class="cards">${cards}</div>`;
+}
+
+/* ═══════════ Git graph ═══════════ */
+// Lane-Zuweisung: jede Lane haelt den SHA, den sie als naechstes erwartet. Ein Commit uebernimmt
+// die Lane, die auf ihn wartet (sonst eine neue); sein erster Parent erbt die Lane, weitere
+// Parents (Merge) oeffnen eigene Lanes.
+function assignLanes(commits) {
+    const lanes = [];
+    const pos = {};
+    commits.forEach((c, i) => {
+        let lane = lanes.indexOf(c.sha);
+        if (lane === -1) {
+            lane = lanes.indexOf(null);
+            if (lane === -1) lane = lanes.length;
+        }
+        lanes[lane] = c.parents[0] || null;
+        c.parents.slice(1).forEach(p => {
+            let extra = lanes.indexOf(null);
+            if (extra === -1) extra = lanes.length;
+            lanes[extra] = p;
+        });
+        pos[c.sha] = { lane, row: i };
+        c._lane = lane;
+    });
+    return { pos, width: Math.max(lanes.length, 1) };
+}
+
+function renderGit(d) {
+    if (!d.repos || !d.repos.length) return '';
+
+    const byBranch = new Map();
+    d.sessions.forEach(s => {
+        if (!s.branch) return;
+        if (!byBranch.has(s.branch)) byBranch.set(s.branch, []);
+        byBranch.get(s.branch).push(s.short);
+    });
+
+    const repos = d.repos.map(repo => {
+        const commits = repo.commits.map(c => Object.assign({}, c));
+        const { pos, width } = assignLanes(commits);
+        const ROW = 34, GAP = 18, X0 = 12;
+        const svgW = X0 * 2 + (width - 1) * GAP;
+        const svgH = Math.max(commits.length * ROW, ROW);
+        const laneX = l => X0 + l * GAP;
+
+        let edges = '', dots = '';
+        commits.forEach((c, i) => {
+            const x = laneX(c._lane), y = i * ROW + ROW / 2;
+            c.parents.forEach(p => {
+                const target = pos[p];
+                if (!target) return;
+                const px = laneX(target.lane), py = target.row * ROW + ROW / 2;
+                // Gerade Linie bei gleicher Lane, sonst eine weiche Kurve zum Parent hinunter.
+                edges += px === x
+                    ? `<path d="M${x} ${y} L${px} ${py}" stroke="#3a3a44" stroke-width="1.6" fill="none"/>`
+                    : `<path d="M${x} ${y} C${x} ${y + ROW * .6}, ${px} ${py - ROW * .6}, ${px} ${py}"
+                         stroke="#3a3a44" stroke-width="1.6" fill="none"/>`;
+            });
+            const head = c.refs.length ? '#fa1e4e' : '#8888a0';
+            dots += `<circle cx="${x}" cy="${y}" r="${c.refs.length ? 5.5 : 4}" fill="${head}"
+                        stroke="#060608" stroke-width="2"/>`;
+        });
+
+        const rows = commits.map(c => {
+            const refs = c.refs.map(r => `<span class="chip chip-branch">${esc(r)}</span>`).join('');
+            const sess = c.refs.flatMap(r => {
+                const clean = r.replace(/^HEAD -> /, '').replace(/^origin\//, '');
+                return byBranch.get(clean) || [];
+            });
+            const link = sess.length
+                ? `<span class="chip chip-live">🛰️ ${esc([...new Set(sess)].join(' '))}</span>` : '';
+            return `<div class="crow">
+                <span class="sha">${esc(c.sha)}</span>
+                <span class="subj">${esc(c.subject)}${refs}${link}</span>
+                <span class="meta">${esc(c.author)} · ${esc(fmtDate(c.date))}</span>
+            </div>`;
+        }).join('');
+
+        const branchChips = repo.branches.map(b => {
+            const sess = byBranch.get(b.name) || [];
+            const mark = b.name === repo.current ? ' ●' : '';
+            return `<span class="chip chip-branch" title="${esc(b.head)}">${esc(b.name)}${mark}${
+                sess.length ? ' · 🛰️' + sess.length : ''}</span>`;
+        }).join('');
+
+        return `<div class="repo">
+            <div class="repo-head">
+                <span class="name">📁 ${esc(repo.name)}</span>
+                <span style="font-size:.7rem;color:var(--muted);font-family:var(--mono)">${esc(repo.path)}</span>
+            </div>
+            <div style="margin-bottom:10px">${branchChips}</div>
+            <div class="graph">
+                <svg width="${svgW}" height="${svgH}">${edges}${dots}</svg>
+                <div class="rows">${rows}</div>
+            </div>
+        </div>`;
+    }).join('');
+
+    return `<h2>🌿 Git-Historie — verknüpft mit Sessions</h2>
+        <div class="panel">${repos}
+        <div class="note">🛰️ markiert Branches/Commits, an denen eine Claude-Session gearbeitet hat
+        (Zuordnung über das <code>gitBranch</code>-Feld der Transkripte). ● = aktueller Branch.</div></div>`;
+}
+
+/* ═══════════ Boot ═══════════ */
+function renderEmpty() {
+    app.innerHTML = `<div class="empty">
+        <h2 style="justify-content:center">Keine Session-Daten gefunden</h2>
+        <p>Erzeuge <code>sessions-data.js</code> aus deinen echten Claude-Code-Transkripten:</p>
+        <code>python3 scripts/scan-claude-sessions.py</code>
+        <div class="note">Der Scanner liest <code>~/.claude/projects/&lt;projekt&gt;/&lt;sessionId&gt;.jsonl</code>
+        und korreliert jede Session mit den Branches und Commits ihres Repos.<br>
+        Es werden keine Nachrichteninhalte übernommen — nur Metadaten und der erste Prompt als Titel.</div>
+    </div>`;
+}
+
+if (!DATA || !DATA.sessions) {
+    renderEmpty();
+} else {
+    document.getElementById('genAt').textContent = 'Stand: ' + fmtDate(DATA.generatedAt, true);
+    app.innerHTML = renderStats(DATA) + renderTimeline(DATA) + renderSessions(DATA) + renderGit(DATA);
+
+    app.addEventListener('mousemove', e => {
+        const bar = e.target.closest('[data-tip]');
+        if (bar) showTip(bar.dataset.tip, e); else hideTip();
+    });
+    app.addEventListener('mouseleave', hideTip);
+}
+</script>
+</body>
+</html>
