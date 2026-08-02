@@ -1,0 +1,105 @@
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  OPEN AI TERMINAL  ·  DEVKiTZ                                      ║
+// ║  Geschlossenes System: Gitea · OpenCloud · Immich · Chat mit       ║
+// ║  Werkzeugen · Vault · Atuin-Logs · Voicebox — alles im Terminal.   ║
+// ╚══════════════════════════════════════════════════════════════════╝
+layout {
+    default_tab_template {
+        pane size=1 borderless=true { plugin location="zellij:tab-bar"; }
+        children
+        pane size=2 borderless=true { plugin location="zellij:status-bar"; }
+    }
+
+    // TAB 1 — BRIDGE: Kommandozentrale
+    tab name="BRIDGE" focus=true {
+        pane split_direction="horizontal" {
+            pane size="55%" split_direction="vertical" {
+                pane size="40%" name="SYSTEM" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/odysseus-ctl.sh watch"
+                }
+                pane name="OPERATOR" focus=true {
+                    command "bash"
+                }
+            }
+            pane split_direction="vertical" {
+                pane name="CHAT+WERKZEUGE" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/chat-tools.sh repl; exec bash"
+                }
+                pane name="VAULT" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/vault.sh help; exec bash"
+                }
+            }
+        }
+    }
+
+    // TAB 2 — GITVIZ: Repos sichtbar
+    tab name="GITVIZ" {
+        pane split_direction="horizontal" {
+            pane size="58%" name="GRAPH" {
+                command "bash"
+                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/gitviz.sh graph; exec bash"
+            }
+            pane split_direction="vertical" {
+                pane name="AKTIVITAET" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/gitviz.sh activity; ${ODYSSEUS_DIR:-.}/scripts/gitviz.sh authors; exec bash"
+                }
+                pane name="REPOS" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/gitviz.sh watch"
+                }
+            }
+        }
+    }
+
+    // TAB 3 — CLOUD: OpenCloud + Fotos im Terminal-Browser
+    tab name="CLOUD" {
+        pane split_direction="vertical" {
+            pane name="OPENCLOUD" {
+                command "bash"
+                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/browser.sh cloud; exec bash"
+            }
+            pane split_direction="horizontal" {
+                pane name="FOTOS" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/browser.sh fotos; exec bash"
+                }
+                pane name="DIENSTE" {
+                    command "bash"
+                    args "-lc" "${ODYSSEUS_DIR:-.}/scripts/browser.sh; exec bash"
+                }
+            }
+        }
+    }
+
+    // TAB 4 — GITEA: Code + A2A-Bus
+    tab name="GITEA" {
+        pane split_direction="vertical" {
+            pane name="GIT" {
+                command "bash"
+                args "-lc" "git log --oneline -12 2>/dev/null; git status -sb 2>/dev/null; exec bash"
+            }
+            pane name="A2A-INBOX" {
+                command "bash"
+                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/nanochat.sh inbox ${ODYSSEUS_AGENT:-operator}"
+            }
+        }
+    }
+
+    // TAB 5 — LOGS: Stack-Logs + Atuin-History
+    tab name="LOGS" {
+        pane split_direction="horizontal" {
+            pane size="60%" name="STACK-LOGS" {
+                command "bash"
+                args "-lc" "${ODYSSEUS_DIR:-.}/scripts/odysseus-ctl.sh logs"
+            }
+            pane name="ATUIN" {
+                command "bash"
+                args "-lc" "atuin history list --limit 20 2>/dev/null || echo '[OAT] atuin-Client fehlt (cargo install atuin) — Server laeuft auf :8888'; exec bash"
+            }
+        }
+    }
+}

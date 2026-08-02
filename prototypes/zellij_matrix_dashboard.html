@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zellij Matrix Dashboard // GSH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Matrix Theme Colors & Fonts */
+        :root {
+            --matrix-black: #000000;
+            --matrix-dark: #050a05;
+            --matrix-green: #00FF41;
+            --matrix-dim: #008F11;
+            --matrix-glow: 0 0 10px rgba(0, 255, 65, 0.4);
+            --matrix-glow-strong: 0 0 20px rgba(0, 255, 65, 0.8);
+        }
+
+        body {
+            background-color: var(--matrix-black);
+            color: var(--matrix-green);
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* CRT / Scanline Effekt für echten Retro-Look */
+        .scanlines::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .matrix-text {
+            text-shadow: var(--matrix-glow);
+        }
+
+        .pane-border {
+            border: 1px solid var(--matrix-dim);
+            background-color: var(--matrix-dark);
+            box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .pane-border.active {
+            border-color: var(--matrix-green);
+            box-shadow: inset 0 0 30px rgba(0, 255, 65, 0.05), 0 0 15px rgba(0, 255, 65, 0.2);
+        }
+
+        /* Zellij Title Tab */
+        .pane-title {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background-color: var(--matrix-black);
+            padding: 0 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--matrix-green);
+            border-radius: 2px;
+            text-shadow: var(--matrix-glow);
+        }
+
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: var(--matrix-black); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--matrix-dim); }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--matrix-green); }
+
+        /* GSH Input field styling */
+        #gsh-input {
+            background: transparent;
+            border: none;
+            color: var(--matrix-green);
+            font-family: inherit;
+            outline: none;
+            width: 100%;
+            text-shadow: var(--matrix-glow);
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-4 scanlines">
+
+    <!-- Haupt-Terminal Container -->
+    <div class="w-full max-w-7xl h-[95vh] flex flex-col relative z-10 pane-border active">
+        
+        <!-- Zellij Top Bar (Navigation) -->
+        <div class="flex items-center justify-between px-4 py-2 border-b border-[#008F11] bg-[#020502]">
+            <div class="flex items-center space-x-4">
+                <div class="matrix-text font-bold text-lg tracking-widest">ZELLIJ // MATRIX_OS</div>
+            </div>
+            
+            <div class="flex space-x-1" id="top-navi">
+                <button class="px-4 py-1 bg-[#00FF41] text-black font-bold border border-[#00FF41] shadow-[0_0_10px_#00FF41]">1: Hauptdeck</button>
+                <button class="px-4 py-1 text-[#008F11] hover:text-[#00FF41] hover:border-[#00FF41] border border-transparent transition-colors">2: Server</button>
+                <button class="px-4 py-1 text-[#008F11] hover:text-[#00FF41] hover:border-[#00FF41] border border-transparent transition-colors">3: Uplink</button>
+            </div>
+
+            <div class="text-[#008F11] text-xs flex items-center">
+                <span class="mr-2 blink">SYS_ONLINE</span>
+                <span id="clock">00:00:00</span>
+            </div>
+        </div>
+
+        <!-- Main Workspace (Grid Layout) -->
+        <div class="flex-1 p-4 grid grid-cols-1 md:grid-cols-4 gap-4 bg-black overflow-hidden relative">
+            
+            <!-- Left Pane: NAVI & SYS STATUS -->
+            <div class="relative pane-border p-4 flex flex-col md:col-span-1" onclick="activatePane(0)" id="pane-0">
+                <div class="pane-title">NAVI // STATUS</div>
+                
+                <div class="mt-4 flex-1 space-y-6">
+                    <!-- Status Bars -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span>CPU_CORE</span><span id="cpu-val">34%</span>
+                        </div>
+                        <div class="h-2 border border-[#008F11] w-full relative">
+                            <div class="absolute top-0 left-0 h-full bg-[#00FF41] transition-all" id="cpu-bar" style="width: 34%; box-shadow: var(--matrix-glow);"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span>MEM_ALLOC</span><span id="mem-val">64%</span>
+                        </div>
+                        <div class="h-2 border border-[#008F11] w-full relative">
+                            <div class="absolute top-0 left-0 h-full bg-[#00FF41] transition-all" id="mem-bar" style="width: 64%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <div class="pt-4 border-t border-[#008F11] border-dashed">
+                        <div class="text-xs text-[#008F11] mb-2">SCHNELLZUGRIFF</div>
+                        <ul class="space-y-2 text-sm">
+                            <li class="cursor-pointer hover:text-white transition-colors flex items-center">
+                                <span class="mr-2">></span> ~/system/root
+                            </li>
+                            <li class="cursor-pointer hover:text-white transition-colors flex items-center">
+                                <span class="mr-2">></span> ~/gsh/bin
+                            </li>
+                            <li class="cursor-pointer hover:text-white transition-colors flex items-center">
+                                <span class="mr-2">></span> ~/logs/matrix
+                            </li>
+                            <li class="cursor-pointer hover:text-white transition-colors flex items-center">
+                                <span class="mr-2">></span> ~/net/firewall
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Decrypting Animation Placeholder -->
+                    <div class="mt-auto pt-4 text-xs font-mono opacity-70 break-all" id="decrypt-box">
+                        0x4F 0x2A 0x11 ...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle/Right Panes Container -->
+            <div class="md:col-span-3 flex flex-col gap-4">
+                
+                <!-- Top Right Pane: MATRIX RAIN -->
+                <div class="relative pane-border flex-1 active" onclick="activatePane(1)" id="pane-1">
+                    <div class="pane-title">CORE // VISUALIZER</div>
+                    <canvas id="matrix-canvas" class="w-full h-full opacity-80"></canvas>
+                </div>
+
+                <!-- Bottom Right Pane: GSH COMMAND LINE -->
+                <div class="relative pane-border h-64 flex flex-col p-4" onclick="activatePane(2)" id="pane-2">
+                    <div class="pane-title">GSH // TERMINAL</div>
+                    
+                    <div class="flex-1 overflow-y-auto custom-scrollbar font-mono text-sm space-y-1 mb-2" id="gsh-output">
+                        <div class="text-[#008F11]">Initialisiere Global Shell (gsh) v2.0...</div>
+                        <div class="text-[#008F11]">Verbindung zum Matrix-Knoten hergestellt.</div>
+                        <div class="matrix-text mt-2">Willkommen, Operator. Tippe 'help' für eine Liste der Befehle.</div>
+                    </div>
+                    
+                    <div class="flex items-center border-t border-[#008F11] border-dashed pt-2">
+                        <span class="mr-2 matrix-text font-bold">root@gsh:~#</span>
+                        <input type="text" id="gsh-input" autocomplete="off" spellcheck="false" autofocus>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Zellij Bottom Status Bar -->
+        <div class="bg-[#020502] border-t border-[#008F11] text-[10px] px-4 py-2 flex items-center space-x-4 overflow-x-auto whitespace-nowrap">
+            <div class="flex items-center space-x-1">
+                <span class="bg-[#00FF41] text-black font-bold px-1.5 rounded-sm">Ctrl + P</span>
+                <span class="text-[#00FF41]">PANES</span>
+            </div>
+            <div class="flex items-center space-x-1">
+                <span class="bg-[#008F11] text-black px-1.5 rounded-sm">Ctrl + T</span>
+                <span class="text-[#008F11]">TAB</span>
+            </div>
+            <div class="flex items-center space-x-1">
+                <span class="bg-[#008F11] text-black px-1.5 rounded-sm">Ctrl + N</span>
+                <span class="text-[#008F11]">RESIZE</span>
+            </div>
+            <div class="flex items-center space-x-1">
+                <span class="bg-[#008F11] text-black px-1.5 rounded-sm">Ctrl + S</span>
+                <span class="text-[#008F11]">SCROLL</span>
+            </div>
+            <div class="flex items-center space-x-1">
+                <span class="bg-[#008F11] text-black px-1.5 rounded-sm">Ctrl + Q</span>
+                <span class="text-[#008F11]">QUIT</span>
+            </div>
+            <div class="flex-1"></div>
+            <div class="text-[#008F11] font-bold tracking-widest">
+                [ GSH_MODE: ACTIVE ]
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. ZELLIJ PANE MANAGEMENT ---
+        function activatePane(index) {
+            document.querySelectorAll('.pane-border').forEach(p => p.classList.remove('active'));
+            document.getElementById(`pane-${index}`).classList.add('active');
+            
+            // Wenn Terminal angeklickt wird, Input fokussieren
+            if (index === 2) {
+                document.getElementById('gsh-input').focus();
+            }
+        }
+
+        // Clock & System Simulation
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('de-DE');
+            
+            // Random CPU/MEM fluctuations
+            const cpu = Math.floor(Math.random() * 60) + 20;
+            const mem = Math.floor(Math.random() * 10) + 60;
+            document.getElementById('cpu-val').innerText = `${cpu}%`;
+            document.getElementById('cpu-bar').style.width = `${cpu}%`;
+            document.getElementById('mem-val').innerText = `${mem}%`;
+            document.getElementById('mem-bar').style.width = `${mem}%`;
+
+            // Random Hex Decrypt animation
+            const hexChars = "0123456789ABCDEF";
+            let hexStr = "";
+            for(let i=0; i<8; i++) {
+                hexStr += "0x" + hexChars[Math.floor(Math.random() * 16)] + hexChars[Math.floor(Math.random() * 16)] + " ";
+            }
+            document.getElementById('decrypt-box').innerText = `DECRYPTING: \n${hexStr}...`;
+        }, 1000);
+
+
+        // --- 2. MATRIX RAIN EFFECT (Canvas) ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Canvas Größe anpassen
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=~[]{}|;:,.<>?/ｦｱｳｴｵｶｷｹｺｻｼｽｾｿﾀﾂﾃﾅﾆﾇﾈﾊﾋﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ'.split('');
+        const fontSize = 14;
+        let drops = [];
+
+        // Initialisiere Tropfen
+        for (let x = 0; x < canvas.width / fontSize; x++) {
+            drops[x] = Math.random() * canvas.height; // Zufälliger Start
+        }
+
+        function drawMatrix() {
+            // Schwarzer Hintergrund mit leichter Transparenz für den Schweif-Effekt
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00FF41'; // Matrix Grün
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                
+                // Zeichne Zeichen
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // Tropfen zurücksetzen oder weiter fallen lassen
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+            requestAnimationFrame(drawMatrix);
+        }
+        drawMatrix();
+
+
+        // --- 3. GSH (Global Shell) LOGIC ---
+        const gshInput = document.getElementById('gsh-input');
+        const gshOutput = document.getElementById('gsh-output');
+        
+        // Immer Fokus auf das Inputfeld behalten, wenn man in den Body klickt (für schnelles Tippen)
+        document.body.addEventListener('click', (e) => {
+            if(e.target.tagName !== 'BUTTON') {
+                gshInput.focus();
+                activatePane(2);
+            }
+        });
+
+        // printLog nimmt bewusst Markup entgegen (<br/>, &nbsp;, <span>) — alles,
+        // was aus einer Eingabe oder aus dem DOM stammt, MUSS vorher durch esc().
+        function esc(s) { const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; }
+
+        function printLog(text, isError = false) {
+            const div = document.createElement('div');
+            div.className = isError ? 'text-red-500 text-shadow-none' : 'text-[#00FF41] matrix-text';
+            div.innerHTML = text;
+            gshOutput.appendChild(div);
+            gshOutput.scrollTop = gshOutput.scrollHeight;
+        }
+
+        function handleCommand(cmd) {
+            const args = cmd.trim().split(' ');
+            const baseCmd = args[0].toLowerCase();
+
+            switch(baseCmd) {
+                case 'help':
+                    printLog("<br/>Verfügbare GSH Befehle:");
+                    printLog("&nbsp;&nbsp;help&nbsp;&nbsp;&nbsp;&nbsp;- Zeigt diese Hilfe an");
+                    printLog("&nbsp;&nbsp;clear&nbsp;&nbsp;&nbsp;- Leert das Terminal");
+                    printLog("&nbsp;&nbsp;status&nbsp;&nbsp;- Zeigt den Systemstatus");
+                    printLog("&nbsp;&nbsp;matrix&nbsp;&nbsp;- Startet eine Überladung des Visualizers");
+                    printLog("&nbsp;&nbsp;nav&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Navigiere Module (Bsp: nav sys)");
+                    printLog("<br/>");
+                    break;
+                case 'clear':
+                    gshOutput.innerHTML = '';
+                    break;
+                case 'status':
+                    printLog(">> SYSTEM STATUS <<");
+                    printLog(`CPU: ${esc(document.getElementById('cpu-val').innerText)} | MEM: ${esc(document.getElementById('mem-val').innerText)}`);
+                    printLog("Netzwerk: ONLINE");
+                    printLog("Firewall: WACHSAM");
+                    break;
+                case 'matrix':
+                    printLog("Überlade Matrix Core...");
+                    // Kurzer Hack: Matrix-Farbe für 2 Sekunden auf Weiß setzen, dann zurück
+                    ctx.fillStyle = '#FFFFFF';
+                    setTimeout(() => printLog("Überladung abgeschlossen."), 1500);
+                    break;
+                case 'nav':
+                    if(args[1]) {
+                        printLog(`Navigiere zu Modul: ${esc(args[1])}... Zugriff gewährt.`);
+                    } else {
+                        printLog("Fehler: Zielmodul fehlt. Syntax: nav [ziel]", true);
+                    }
+                    break;
+                case '':
+                    break; // Leere Eingabe ignorieren
+                default:
+                    printLog(`gsh: command not found: ${esc(baseCmd)}`, true);
+            }
+        }
+
+        gshInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const cmd = this.value;
+                printLog(`<span class="text-[#008F11]">root@gsh:~#</span> ${esc(cmd)}`);
+                handleCommand(cmd);
+                this.value = ''; // Input leeren
+            }
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  OPEN AI TERMINAL // CLOUD DESIGN SYSTEM — TOKENS                  ║
+   ║  Quelle: design/tokens.json — hier als CSS Custom Properties.      ║
+   ║  Prefix `--oat-` damit nichts mit Fremd-UIs (OpenCloud/Nextcloud/  ║
+   ║  Gitea) kollidiert.                                                ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
+:root {
+  /* ── Flaechen ─────────────────────────────────────────────────── */
+  --oat-bg-base:      #000000;
+  --oat-bg-sunken:    #030703;
+  --oat-bg-surface:   #050a05;
+  --oat-bg-raised:    #070d07;
+  --oat-bg-hover:     #0b160b;
+  --oat-bg-selected:  #0e2410;
+
+  /* ── Text ─────────────────────────────────────────────────────── */
+  --oat-fg-primary:   #00FF41;
+  --oat-fg-accent:    #39FF14;
+  --oat-fg-muted:     #008F11;
+  --oat-fg-faint:     #004d0a;
+  --oat-fg-neutral:   #e5e7eb;
+  --oat-fg-grey:      #5a6b5a;
+
+  /* ── Zustaende ────────────────────────────────────────────────── */
+  --oat-ok:           #00FF41;
+  --oat-warn:         #ffb000;
+  --oat-error:        #ff3333;
+  --oat-info:         #00d4ff;
+
+  /* ── Rahmen ───────────────────────────────────────────────────── */
+  --oat-border-subtle:  #004d0a;
+  --oat-border-default: #008F11;
+  --oat-border-strong:  #00FF41;
+  --oat-border-width:   1px;
+  --oat-border-thick:   2px;
+
+  /* ── Typografie (durchgehend monospaced) ──────────────────────── */
+  --oat-font: ui-monospace, "Cascadia Code", "JetBrains Mono", "Courier New", monospace;
+  --oat-text-xs:  11px;
+  --oat-text-sm:  13px;
+  --oat-text-md:  15px;
+  --oat-text-lg:  18px;
+  --oat-text-xl:  24px;
+  --oat-text-2xl: 34px;
+  --oat-text-3xl: clamp(34px, 7vw, 88px);
+  --oat-weight-regular: 400;
+  --oat-weight-bold:    700;
+  --oat-weight-black:   800;
+  --oat-leading-tight:  1.15;
+  --oat-leading-normal: 1.55;
+  --oat-leading-loose:  1.7;
+  --oat-track-wide:   1px;
+  --oat-track-wider:  2px;
+  --oat-track-widest: 4px;
+
+  /* ── Abstaende ────────────────────────────────────────────────── */
+  --oat-space-0: 0;    --oat-space-1: 4px;  --oat-space-2: 8px;
+  --oat-space-3: 12px; --oat-space-4: 16px; --oat-space-5: 24px;
+  --oat-space-6: 32px; --oat-space-7: 48px; --oat-space-8: 64px;
+
+  /* ── Form ─────────────────────────────────────────────────────── */
+  --oat-radius: 0;          /* eckig — Terminal-Look */
+  --oat-radius-sm: 2px;
+
+  /* ── Licht ────────────────────────────────────────────────────── */
+  --oat-glow:        0 0 10px rgba(0,255,65,.45);
+  --oat-glow-strong: 0 0 22px rgba(0,255,65,.75);
+  --oat-shadow-pane: inset 0 0 40px rgba(0,255,65,.04), 0 0 24px rgba(0,255,65,.06);
+
+  /* ── Bewegung ─────────────────────────────────────────────────── */
+  --oat-motion-fast:   120ms;
+  --oat-motion-normal: 250ms;
+  --oat-motion-slow:   500ms;
+  --oat-ease: cubic-bezier(.2,.7,.3,1);
+
+  /* ── Layout ───────────────────────────────────────────────────── */
+  --oat-pane-padding: clamp(16px, 2.5vw, 32px);
+  --oat-content-max:  72ch;
+  --oat-grid-gap:     clamp(12px, 1.6vw, 20px);
+
+  /* ── CRT ──────────────────────────────────────────────────────── */
+  --oat-scanline: 3px;
+}
+
+/* Hell-Variante: bewusst NICHT invertiert. Das System ist dark-only —
+   Fremd-UIs, die `prefers-color-scheme: light` erzwingen, bekommen hier
+   denselben Satz, damit nichts weiss aufblitzt. */
+@media (prefers-color-scheme: light) { :root { color-scheme: dark; } }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --oat-motion-fast: 0ms; --oat-motion-normal: 0ms; --oat-motion-slow: 0ms; }
+}

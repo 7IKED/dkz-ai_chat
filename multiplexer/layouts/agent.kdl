@@ -1,0 +1,54 @@
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  PROFIL 3 · AGENTEN-BASIS  //  Dirigent · Nanobot Swarm · Webhooks ║
+// ║  cosmo agent                                                       ║
+// ╚══════════════════════════════════════════════════════════════════╝
+// Nachbau des "Cosmo Agent Workspace" Mockups als echte Terminal-Umgebung:
+// Dirigent/Control · Agent-Runner · nanoChat · Webhook-Monitor.
+
+layout {
+    default_tab_template {
+        pane size=1 borderless=true { plugin location="zellij:tab-bar"; }
+        children
+        pane size=2 borderless=true { plugin location="zellij:status-bar"; }
+    }
+
+    tab name="ORCHESTRATOR" focus=true {
+        pane split_direction="horizontal" {
+            // Obere Reihe: Control + Agent-Runner
+            pane size="55%" split_direction="vertical" {
+                pane size="30%" name="DIRIGENT" {
+                    command "bash"
+                    args "-lc" "${COSMO_MUX_DIR:-.}/scripts/agent-ctl.sh status; exec bash"
+                }
+                pane name="AGENT-RUNNER" focus=true {
+                    command "bash"
+                    args "-lc" "${COSMO_AGENT_CMD:-bash}"
+                }
+            }
+            // Untere Reihe: Chat + Webhook-Feed
+            pane split_direction="vertical" {
+                pane name="nanoCHAT" {
+                    command "bash"
+                    args "-lc" "echo '[SYSTEM] nanoChat Socket bereit. pi-agent verbunden.'; exec bash"
+                }
+                pane name="WEBHOOKS" {
+                    command "bash"
+                    args "-lc" "${COSMO_MUX_DIR:-.}/scripts/agent-ctl.sh webhooks; exec bash"
+                }
+            }
+        }
+    }
+
+    tab name="SWARM" {
+        pane split_direction="vertical" {
+            pane name="SWARM-LOG" {
+                command "bash"
+                args "-lc" "${COSMO_MUX_DIR:-.}/scripts/agent-ctl.sh swarm; exec bash"
+            }
+            pane name="QUEUE" {
+                command "bash"
+                args "-lc" "${COSMO_MUX_DIR:-.}/scripts/agent-ctl.sh queue; exec bash"
+            }
+        }
+    }
+}

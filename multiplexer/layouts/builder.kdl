@@ -1,0 +1,75 @@
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  PROFIL 4 · MULTI-BUILDER + TESTSTRASSEN  //  Build & CI Capture  ║
+// ║  cosmo builder                                                     ║
+// ╚══════════════════════════════════════════════════════════════════╝
+// Parallele Build-Lanes + Test-Runner + Watch + Teststrassen-Erfassung.
+// Jede Lane laeuft eigenstaendig; testlane.sh erfasst stdout/stderr,
+// Exit-Code und Dauer in multiplexer/.captures/.
+
+layout {
+    default_tab_template {
+        pane size=1 borderless=true { plugin location="zellij:tab-bar"; }
+        children
+        pane size=2 borderless=true { plugin location="zellij:status-bar"; }
+    }
+
+    // TAB 1 — Build-Strassen (bis zu 4 parallel)
+    tab name="BUILD-LANES" focus=true {
+        pane split_direction="horizontal" {
+            pane split_direction="vertical" {
+                pane name="LANE-A" focus=true {
+                    command "bash"
+                    args "-lc" "${COSMO_MUX_DIR:-.}/scripts/testlane.sh lane-a \"${COSMO_BUILD_A:-echo 'setze COSMO_BUILD_A, z.B. npm run build'}\"; exec bash"
+                }
+                pane name="LANE-B" {
+                    command "bash"
+                    args "-lc" "${COSMO_MUX_DIR:-.}/scripts/testlane.sh lane-b \"${COSMO_BUILD_B:-echo 'setze COSMO_BUILD_B'}\"; exec bash"
+                }
+            }
+            pane split_direction="vertical" {
+                pane name="LANE-C" {
+                    command "bash"
+                    args "-lc" "${COSMO_MUX_DIR:-.}/scripts/testlane.sh lane-c \"${COSMO_BUILD_C:-echo 'setze COSMO_BUILD_C'}\"; exec bash"
+                }
+                pane name="LANE-D" {
+                    command "bash"
+                    args "-lc" "${COSMO_MUX_DIR:-.}/scripts/testlane.sh lane-d \"${COSMO_BUILD_D:-echo 'setze COSMO_BUILD_D'}\"; exec bash"
+                }
+            }
+        }
+    }
+
+    // TAB 2 — Teststrassen (Test-Runner + Watch + Coverage)
+    tab name="TESTSTRASSE" {
+        pane split_direction="horizontal" {
+            pane size="65%" name="TEST-RUN" focus=true {
+                command "bash"
+                args "-lc" "${COSMO_MUX_DIR:-.}/scripts/testlane.sh test \"${COSMO_TEST_CMD:-echo 'setze COSMO_TEST_CMD, z.B. npm test'}\"; exec bash"
+            }
+            pane split_direction="vertical" {
+                pane name="WATCH" {
+                    command "bash"
+                    args "-lc" "${COSMO_WATCH_CMD:-echo '[COSMO] setze COSMO_WATCH_CMD (z.B. npm run test:watch)'}; exec bash"
+                }
+                pane name="CAPTURE" {
+                    command "bash"
+                    args "-lc" "${COSMO_MUX_DIR:-.}/scripts/testlane.sh --tail; exec bash"
+                }
+            }
+        }
+    }
+
+    // TAB 3 — Docker Build / Compose
+    tab name="DOCKER-BUILD" {
+        pane split_direction="horizontal" {
+            pane name="COMPOSE" {
+                command "bash"
+                args "-lc" "echo '[COSMO] docker compose up --build'; docker compose version 2>/dev/null; exec bash"
+            }
+            pane name="IMAGES" {
+                command "bash"
+                args "-lc" "watch -n3 'docker images 2>/dev/null | head -20 || echo docker n/a'"
+            }
+        }
+    }
+}

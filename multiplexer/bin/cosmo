@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  OPEN AI TERMINAL // LAUNCHER                                     ║
+# ║  DEVKiTZ™ Ecosystem · Zellij Wrapper                               ║
+# ╚══════════════════════════════════════════════════════════════════╝
+#  cosmo <profil> [args]
+#    desktop   Arbeitsplatz (Editor/Monitor/Logs)
+#    vps       VPS-Steuerung (SSH/Docker/Uplink)
+#    agent     Agenten-Basis (Dirigent/Swarm/Webhooks)
+#    builder   Multi-Builder + Teststrassen-Erfassung
+#    monitor   Monitoring / Security (Focus/Grid)
+#    ls        laufende Cosmo-Sessions
+#    kill <n>  Session beenden
+#    help
+# ─────────────────────────────────────────────────────────────────────
+set -uo pipefail
+
+# Installations-Basis ermitteln (folgt Symlinks)
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+    DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+    SOURCE="$(readlink "$SOURCE")"; [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+BIN_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+export COSMO_MUX_DIR="$(dirname "$BIN_DIR")"
+
+CONFIG="$COSMO_MUX_DIR/config/config.kdl"
+LAYOUT_DIR="$COSMO_MUX_DIR/layouts"
+
+G='\033[38;5;46m'; DIM='\033[38;5;28m'; R='\033[38;5;196m'; N='\033[0m'
+
+# Optionale User-Umgebung (Hosts, Build-Befehle etc.)
+[ -f "${COSMO_ENV:-$HOME/.config/cosmo/env}" ] && . "${COSMO_ENV:-$HOME/.config/cosmo/env}"
+
+have_zellij() { command -v zellij >/dev/null 2>&1; }
+
+banner() {
+cat <<'EOF'
+  ██████╗ ██████╗ ███████╗███╗   ███╗ ██████╗
+ ██╔════╝██╔═══██╗██╔════╝████╗ ████║██╔═══██╗   OPEN AI TERMINAL
+ ██║     ██║   ██║███████╗██╔████╔██║██║   ██║   DEVKiTZ Ecosystem
+ ██║     ██║   ██║╚════██║██║╚██╔╝██║██║   ██║   Zellij · Matrix
+ ╚██████╗╚██████╔╝███████║██║ ╚═╝ ██║╚██████╔╝
+  ╚═════╝ ╚═════╝ ╚══════╝╚═╝     ╚═╝ ╚═════╝
+EOF
+}
+
+usage() {
+    banner
+    echo -e "${G}Nutzung:${N} cosmo <profil> [args]"
+    echo
+    echo -e "  ${G}desktop${N}   Arbeitsplatz  (Editor · Monitor · Logs)"
+    echo -e "  ${G}vps${N}       VPS-Steuerung (SSH · Docker · Uplink)"
+    echo -e "  ${G}agent${N}     Agenten-Basis (Dirigent · Swarm · Webhooks)"
+    echo -e "  ${G}builder${N}   Multi-Builder + Teststrassen-Erfassung"
+    echo -e "  ${G}monitor${N}   Monitoring / Security (Grid · Logs)"
+    echo
+    echo -e "  ${DIM}ls${N}         laufende Cosmo-Sessions"
+    echo -e "  ${DIM}kill <name>${N} Session beenden"
+    echo -e "  ${DIM}attach <n>${N}  an Session anhaengen"
+    echo -e "  ${DIM}config${N}     Pfade anzeigen"
+}
+
+launch() {
+    local profile="$1"; shift || true
+    local layout="$LAYOUT_DIR/${profile}.kdl"
+    if [ ! -f "$layout" ]; then
+        echo -e "${R}[COSMO] Unbekanntes Profil: ${profile}${N}"; usage; exit 1
+    fi
+    if ! have_zellij; then
+        echo -e "${R}[COSMO] zellij nicht gefunden.${N} Installiere mit:"
+        echo -e "        ${DIM}$COSMO_MUX_DIR/install.sh${N}"
+        exit 127
+    fi
+    local session="cosmo-${profile}"
+    echo -e "${G}[COSMO] starte Profil '${profile}' (session: ${session})${N}"
+    # --config-dir laesst Zellij unser config.kdl + Theme finden.
+    exec zellij --config "$CONFIG" \
+                --session "$session" \
+                --new-session-with-layout "$layout"
+}
+
+CMD="${1:-help}"; shift || true
+case "$CMD" in
+    desktop|vps|agent|builder|monitor) launch "$CMD" "$@";;
+    ls|list)   have_zellij && zellij list-sessions || echo "zellij n/a";;
+    attach)    have_zellij && zellij attach "${1:-cosmo-desktop}" || echo "zellij n/a";;
+    kill)      have_zellij && zellij kill-session "${1:?session name}" || echo "zellij n/a";;
+    config)    echo "MUX_DIR=$COSMO_MUX_DIR"; echo "CONFIG=$CONFIG"; echo "LAYOUTS=$LAYOUT_DIR";;
+    help|-h|--help) usage;;
+    *) echo -e "${R}[COSMO] unbekannt: ${CMD}${N}"; usage; exit 1;;
+esac

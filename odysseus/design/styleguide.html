@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OPEN AI TERMINAL // Cloud Design System</title>
+<link rel="icon" href="themes/assets/favicon.svg">
+<link rel="stylesheet" href="dist/oat-cloud.css">
+<style>
+  /* nur fuer diese Seite */
+  .sg-wrap { max-width: 1180px; margin: 0 auto; padding: var(--oat-space-6) var(--oat-space-5) var(--oat-space-8); }
+  .sg-head { display: flex; align-items: flex-end; gap: var(--oat-space-5); flex-wrap: wrap; margin-bottom: var(--oat-space-6); }
+  .sg-sec { margin-top: var(--oat-space-7); }
+  .sg-sec > h2 { border-bottom: 1px solid var(--oat-border-subtle); padding-bottom: var(--oat-space-2); }
+  .sg-swatch { border: 1px solid var(--oat-border-subtle); }
+  .sg-swatch__chip { height: 56px; }
+  .sg-swatch__meta { padding: var(--oat-space-2) var(--oat-space-3); font-size: var(--oat-text-xs); display: flex; justify-content: space-between; gap: var(--oat-space-2); }
+  .sg-swatch__meta code { border: 0; background: none; padding: 0; color: var(--oat-fg-grey); }
+  .sg-demo { display: flex; gap: var(--oat-space-3); flex-wrap: wrap; align-items: center; }
+  .sg-note { border-left: 2px solid var(--oat-fg-muted); padding-left: var(--oat-space-3); color: var(--oat-fg-grey); font-size: var(--oat-text-sm); }
+</style>
+</head>
+<body class="oat-crt">
+<div class="sg-wrap">
+
+  <header class="sg-head">
+    <img src="themes/assets/logo.svg" alt="OPEN AI TERMINAL" width="240" height="48">
+    <div class="oat-spacer"></div>
+    <div class="oat-stat"><span class="oat-stat__n">1</span><span class="oat-stat__l">Token-Satz</span></div>
+    <div class="oat-stat"><span class="oat-stat__n">3</span><span class="oat-stat__l">Ziele: Web · Shell · Zellij</span></div>
+  </header>
+
+  <p class="sg-note">
+    Lebendes Styleguide. Alles hier kommt aus <code>design/tokens.json</code> →
+    <code>build.sh</code> → <code>dist/oat-cloud.css</code>. Aendere die Tokens,
+    baue neu, und Terminal, Zellij-Theme und alle Web-UIs ziehen mit.
+  </p>
+
+  <!-- ── FARBEN ─────────────────────────────────────────────────── -->
+  <section class="sg-sec">
+    <h2>Farben</h2>
+    <h4>Flaechen</h4>
+    <div class="oat-grid oat-grid-3" id="sg-bg"></div>
+    <h4 style="margin-top:var(--oat-space-5)">Text</h4>
+    <div class="oat-grid oat-grid-3" id="sg-fg"></div>
+    <h4 style="margin-top:var(--oat-space-5)">Zustaende</h4>
+    <div class="oat-grid oat-grid-4" id="sg-state"></div>
+    <p class="sg-note" style="margin-top:var(--oat-space-4)">
+      Kontrast: <code>#00FF41</code> auf <code>#000000</code> = 15.3:1 (AAA).
+      <code>#008F11</code> auf <code>#000000</code> = 4.6:1 — nur fuer Rahmen,
+      Labels und Sekundaertext ab 16px, nie fuer Fliesstext.
+    </p>
+  </section>
+
+  <!-- ── TYPOGRAFIE ─────────────────────────────────────────────── -->
+  <section class="sg-sec">
+    <h2>Typografie</h2>
+    <p class="sg-note">Eine Familie, monospaced, ueberall. Groesse traegt die Hierarchie, nicht die Schriftart.</p>
+    <h1 style="font-size:var(--oat-text-2xl)">H1 — Systemtitel</h1>
+    <h2>H2 — Abschnitt</h2>
+    <h3>H3 — Unterabschnitt</h3>
+    <h4>H4 — Label, versal</h4>
+    <p>Fliesstext in <code>--oat-fg-neutral</code>, weil reines Neon-Gruen ueber mehrere Zeilen ermuedet. Maximal <code>72ch</code> breit.</p>
+    <p><small class="oat-meta">Metazeile · 2026-08-02 14:20:31 · exit 0 · 1.4s</small></p>
+    <pre><code>$ odysseus gitviz activity
+DEVKITZ/odysseus  ▁▂▅█▇▃▂▁▄▆█▅▂▁  47 Commits / 14 Tage</code></pre>
+  </section>
+
+  <!-- ── PANE ───────────────────────────────────────────────────── -->
+  <section class="sg-sec">
+    <h2>Pane</h2>
+    <p class="sg-note">Die Grundkachel — dieselbe Anmutung wie ein Zellij-Pane: Rahmen, Eck-Klammern, Reiter links, Tag rechts.</p>
+    <div class="oat-pane">
+      <div class="oat-pane__tab">BRIDGE // 01</div>
+      <div class="oat-pane__tag">127.0.0.1</div>
+      <p style="margin:0">Inhalt eines Panes. Panes verschachteln sich nicht — sie liegen im Raster nebeneinander.</p>
+    </div>
+  </section>
+
+  <!-- ── KARTEN ─────────────────────────────────────────────────── -->
+  <section class="sg-sec">
+    <h2>Karten</h2>
+    <div class="oat-grid oat-grid-3">
+      <article class="oat-card">
+        <div class="oat-card__key">Dienst</div>
+        <div class="oat-card__title">OPENCLOUD</div>
+        <p class="oat-card__body">Dateien, Sync, Freigaben. Apache-2.0. Port 9200.</p>
+      </article>
+      <article class="oat-card">
+        <div class="oat-card__key">Dienst</div>
+        <div class="oat-card__title">GITEA</div>
+        <p class="oat-card__body">Code, Issues, A2A-Webhooks. MIT. Port 3300.</p>
+      </article>
+      <article class="oat-card">
+        <div class="oat-card__key">Dienst</div>
+        <div class="oat-card__title">nanoCHAT</div>
+        <p class="oat-card__body">Chat mit Werkzeugen. MIT. Port 3080.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ── BEDIENELEMENTE ─────────────────────────────────────────── -->
+  <section class="sg-sec">
+    <h2>Bedienelemente</h2>
+    <div class="sg-demo">
+      <button class="oat-btn oat-btn--primary">Ausfuehren</button>
+      <button class="oat-btn">Abbrechen</button>
+      <button class="oat-btn oat-btn--ghost">Details</button>
+      <button class="oat-btn oat-btn--danger">Stack stoppen</button>
+      <button class="oat-btn" disabled>Nicht verfuegbar</button>
+    </div>
+
+    <div class="oat-grid oat-grid-2" style="margin-top:var(--oat-space-5)">
+      <div class="oat-field">
+        <label class="oat-label" for="f1">Repository</label>
+        <input class="oat-input" id="f1" value="DEVKITZ/odysseus">
+        <span class="oat-hint">owner/repo — wird gegen die Gitea-API geprueft</span>
+      </div>
+      <div class="oat-field">
+        <label class="oat-label" for="f2">Vault-Schluessel</label>
+        <input class="oat-input" id="f2" placeholder="api/openrouter" aria-invalid="true">
+        <span class="oat-error">Kein Eintrag unter diesem Pfad</span>
+      </div>
+    </div>
+
+    <div class="oat-prompt" style="margin-top:var(--oat-space-4)">
+      <input aria-label="Befehl" value="odysseus gitviz graph DEVKITZ/odysseus">
+    </div>
+  </section>
+
+  <!-- ── STATUS ─────────────────────────────────────────────────── -->
+  <section class="sg-sec">
+    <h2>Status</h2>
+    <div class="sg-demo">
+      <span class="oat-status oat-status--online"><span class="oat-dot"></span>ONLINE</span>
+      <span class="oat-status oat-status--degraded"><span class="oat-dot"></span>DEGRADED</span>
+      <span class="oat-status oat-status--offline"><span class="oat-dot"></span>OFFLINE</span>
+      <span class="oat-badge oat-badge--ok">pass</span>
+      <span class="oat-badge oat-badge--warn">retry</span>
+      <span class="oat-badge oat-badge--error">fail</span>
+      <span class="oat-badge oat-badge--info">uri</span>
+      <span class="oat-badge oat-badge--solid">v1.1.0</span>
+    </div>
+    <div class="oat-meter" style="margin-top:var(--oat-space-4); max-width:320px"><div class="oat-meter__fill" style="width:73%"></div></div>
+    <small class="oat-meta">73 % — 8 von 11 Diensten erreichbar</small>
+  </section>
+
+  <!-- ── TABELLE ────────────────────────────────────────────────── -->
+  <section class="sg-sec">
+    <h2>Tabelle</h2>
+    <table class="oat-table">
+      <thead><tr><th>Dienst</th><th>Port</th><th>Lizenz</th><th class="num">Uptime</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>gitea</td><td>3300</td><td>MIT</td><td class="num">99.9 %</td><td><span class="oat-badge oat-badge--ok">online</span></td></tr>
+        <tr aria-selected="true"><td>opencloud</td><td>9200</td><td>Apache-2.0</td><td class="num">99.4 %</td><td><span class="oat-badge oat-badge--ok">online</span></td></tr>
+        <tr><td>immich</td><td>2283</td><td>AGPL-3.0</td><td class="num">97.1 %</td><td><span class="oat-badge oat-badge--warn">degraded</span></td></tr>
+        <tr><td>voicebox</td><td>10200</td><td>MIT</td><td class="num">—</td><td><span class="oat-badge oat-badge--error">offline</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── TABS + LISTE ───────────────────────────────────────────── -->
+  <section class="sg-sec">
+    <h2>Tabs &amp; Liste</h2>
+    <div class="oat-tabs" role="tablist">
+      <button class="oat-tab" role="tab" aria-selected="true">BRIDGE</button>
+      <button class="oat-tab" role="tab" aria-selected="false">CLOUD</button>
+      <button class="oat-tab" role="tab" aria-selected="false">GITVIZ</button>
+      <button class="oat-tab" role="tab" aria-selected="false">LOGS</button>
+    </div>
+    <ul class="oat-list" style="margin-top:var(--oat-space-4)">
+      <li><b>oat://repo/DEVKITZ/odysseus</b> — Repo im Terminal oeffnen</li>
+      <li><b>oat://chat/coder</b> — Chat mit Agent, Werkzeuge aktiv</li>
+      <li><b>oat://cloud/Projekte</b> — Ordner in OpenCloud</li>
+    </ul>
+  </section>
+
+  <!-- ── HUD ────────────────────────────────────────────────────── -->
+  <section class="sg-sec">
+    <h2>Statuszeile</h2>
+    <div class="oat-hud">
+      <span style="color:var(--oat-fg-primary);font-weight:700;letter-spacing:var(--oat-track-wider)">OPEN AI TERMINAL</span>
+      <span><span class="oat-key">Ctrl p</span> Panes</span>
+      <span><span class="oat-key">Ctrl t</span> Tabs</span>
+      <span class="oat-spacer"></span>
+      <span class="oat-caret" style="color:var(--oat-fg-primary)"></span>
+    </div>
+  </section>
+
+  <footer class="sg-sec" style="border-top:1px solid var(--oat-border-subtle); padding-top:var(--oat-space-4)">
+    <small class="oat-meta">MIT © DEVKiTZ™ · gebaut aus design/tokens.json · <code>./build.sh</code></small>
+  </footer>
+
+</div>
+
+<script>
+// Farbfelder aus den tatsaechlich geladenen CSS-Variablen erzeugen —
+// so zeigt das Styleguide immer den echten Build, nie eine Kopie.
+const groups = {
+  'sg-bg':    ['bg-base','bg-sunken','bg-surface','bg-raised','bg-hover','bg-selected'],
+  'sg-fg':    ['fg-primary','fg-accent','fg-muted','fg-faint','fg-neutral','fg-grey'],
+  'sg-state': ['ok','warn','error','info'],
+};
+const cs = getComputedStyle(document.documentElement);
+const el = (tag, cls, text) => {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;   // nie innerHTML — der Wert
+  return e;                                       // kommt aus dem DOM
+};
+for (const [id, names] of Object.entries(groups)) {
+  const host = document.getElementById(id);
+  host.replaceChildren(...names.map(n => {
+    const v = cs.getPropertyValue('--oat-' + n).trim();
+    const sw   = el('div', 'sg-swatch');
+    const chip = el('div', 'sg-swatch__chip');
+    chip.style.background = v;                    // Style-Setter, kein Markup
+    const meta = el('div', 'sg-swatch__meta');
+    meta.append(el('span', null, '--oat-' + n), el('code', null, v));
+    sw.append(chip, meta);
+    return sw;
+  }));
+}
+// Tabs schaltbar machen (Demo)
+document.querySelectorAll('[role="tab"]').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('[role="tab"]').forEach(x => x.setAttribute('aria-selected', String(x === t)));
+}));
+</script>
+</body>
+</html>

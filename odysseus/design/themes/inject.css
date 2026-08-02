@@ -1,0 +1,184 @@
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  OPEN AI TERMINAL // INJECT — Matrix-Look fuer FREMDE Web-UIs      ║
+   ║  OpenCloud · Nextcloud · Gitea · LibreChat                         ║
+   ║                                                                    ║
+   ║  Warum: Theme-Dateien der Fremdprojekte decken nie alles ab und    ║
+   ║  aendern sich zwischen Versionen. Dieses Blatt setzt die Marke     ║
+   ║  ueber CSS-Variablen der jeweiligen UI — nicht ueber `!important`  ║
+   ║  auf Selektoren, damit Updates es nicht zerreissen.                ║
+   ║                                                                    ║
+   ║  Einbinden: design/apply-theme.sh (Details in design/README.md).   ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+
+@import url("../css/tokens.css");
+
+/* ── 1) OpenCloud / ownCloud Web ───────────────────────────────────
+   Web nutzt `--oc-color-*` und (neuere Builds) `--oc-role-*`.       */
+:root {
+  --oc-color-background-default:    var(--oat-bg-base);
+  --oc-color-background-secondary:  var(--oat-bg-surface);
+  --oc-color-background-highlight:  var(--oat-bg-hover);
+  --oc-color-background-hover:      var(--oat-bg-hover);
+  --oc-color-background-accentuate: var(--oat-bg-selected);
+
+  --oc-color-swatch-brand-default:     var(--oat-fg-primary);
+  --oc-color-swatch-brand-hover:       var(--oat-fg-accent);
+  --oc-color-swatch-brand-contrast:    var(--oat-bg-base);
+  --oc-color-swatch-primary-default:   var(--oat-fg-primary);
+  --oc-color-swatch-primary-hover:     var(--oat-fg-accent);
+  --oc-color-swatch-primary-muted:     var(--oat-fg-muted);
+  --oc-color-swatch-primary-contrast:  var(--oat-bg-base);
+  --oc-color-swatch-passive-default:   var(--oat-fg-muted);
+  --oc-color-swatch-passive-contrast:  var(--oat-bg-base);
+  --oc-color-swatch-success-default:   var(--oat-ok);
+  --oc-color-swatch-warning-default:   var(--oat-warn);
+  --oc-color-swatch-danger-default:    var(--oat-error);
+
+  --oc-color-text-default: var(--oat-fg-primary);
+  --oc-color-text-muted:   var(--oat-fg-grey);
+  --oc-color-text-inverse: var(--oat-bg-base);
+  --oc-color-border:       var(--oat-border-default);
+
+  --oc-role-surface:                 var(--oat-bg-base);
+  --oc-role-on-surface:              var(--oat-fg-primary);
+  --oc-role-surface-container:       var(--oat-bg-surface);
+  --oc-role-surface-container-low:   var(--oat-bg-sunken);
+  --oc-role-surface-container-high:  var(--oat-bg-raised);
+  --oc-role-on-surface-variant:      var(--oat-fg-grey);
+  --oc-role-primary:                 var(--oat-fg-primary);
+  --oc-role-on-primary:              var(--oat-bg-base);
+  --oc-role-outline:                 var(--oat-border-default);
+  --oc-role-outline-variant:         var(--oat-border-subtle);
+  --oc-role-error:                   var(--oat-error);
+
+  --oc-font-family: var(--oat-font);
+  --oc-space-xsmall: var(--oat-space-1);
+  --oc-space-small:  var(--oat-space-2);
+  --oc-space-medium: var(--oat-space-4);
+  --oc-space-large:  var(--oat-space-5);
+}
+
+/* ── 2) Nextcloud ─────────────────────────────────────────────────
+   Serverseitig via `theming`-App gesetzt; diese Variablen ueber-
+   schreiben das Ergebnis clientseitig vollstaendig.                */
+:root {
+  --color-main-background:        var(--oat-bg-base);
+  --color-main-background-rgb:    0,0,0;
+  --color-main-background-blur:   rgba(0,0,0,.85);
+  --color-main-text:              var(--oat-fg-primary);
+  --color-text-maxcontrast:       var(--oat-fg-grey);
+  --color-text-light:             var(--oat-fg-primary);
+  --color-text-lighter:           var(--oat-fg-grey);
+
+  --color-background-dark:        var(--oat-bg-surface);
+  --color-background-darker:      var(--oat-bg-sunken);
+  --color-background-hover:       var(--oat-bg-hover);
+
+  --color-primary:                var(--oat-fg-primary);
+  --color-primary-default:        var(--oat-fg-primary);
+  --color-primary-text:           var(--oat-bg-base);
+  --color-primary-hover:          var(--oat-fg-accent);
+  --color-primary-light:          var(--oat-bg-selected);
+  --color-primary-light-text:     var(--oat-fg-primary);
+  --color-primary-element:        var(--oat-fg-primary);
+  --color-primary-element-text:   var(--oat-bg-base);
+  --color-primary-element-hover:  var(--oat-fg-accent);
+  --color-primary-element-light:  var(--oat-bg-selected);
+
+  --color-success:  var(--oat-ok);
+  --color-warning:  var(--oat-warn);
+  --color-error:    var(--oat-error);
+  --color-info:     var(--oat-info);
+
+  --color-border:       var(--oat-border-subtle);
+  --color-border-dark:  var(--oat-border-default);
+  --color-border-maxcontrast: var(--oat-border-strong);
+
+  --color-loading-light: var(--oat-bg-surface);
+  --color-loading-dark:  var(--oat-fg-muted);
+
+  --border-radius:       var(--oat-radius);
+  --border-radius-large: var(--oat-radius);
+  --border-radius-pill:  var(--oat-radius);
+  --border-radius-rounded: var(--oat-radius);
+
+  --font-face: var(--oat-font);
+  --background-invert-if-dark: invert(100%);
+}
+body#body-user, body#body-settings, body#body-public { background: var(--oat-bg-base); }
+
+/* ── 3) Gitea ─────────────────────────────────────────────────────
+   Gitea 1.24 nutzt `--color-*` auf :root (Theme `gitea-dark`).      */
+:root, :root[data-theme], .theme-gitea-dark {
+  --color-body:            var(--oat-bg-base);
+  --color-box-body:        var(--oat-bg-surface);
+  --color-box-header:      var(--oat-bg-raised);
+  --color-text:            var(--oat-fg-primary);
+  --color-text-light:      var(--oat-fg-muted);
+  --color-text-light-1:    var(--oat-fg-muted);
+  --color-text-light-2:    var(--oat-fg-grey);
+  --color-text-light-3:    var(--oat-fg-grey);
+  --color-footer:          var(--oat-bg-sunken);
+  --color-nav-bg:          var(--oat-bg-sunken);
+  --color-nav-hover-bg:    var(--oat-bg-hover);
+  --color-secondary:       var(--oat-fg-muted);
+  --color-secondary-dark-1:var(--oat-fg-primary);
+  --color-primary:         var(--oat-fg-primary);
+  --color-primary-contrast:var(--oat-bg-base);
+  --color-primary-dark-1:  var(--oat-fg-accent);
+  --color-primary-dark-2:  var(--oat-fg-accent);
+  --color-primary-light-1: var(--oat-fg-muted);
+  --color-primary-hover:   var(--oat-fg-accent);
+  --color-primary-active:  var(--oat-fg-accent);
+  --color-green:           var(--oat-ok);
+  --color-red:             var(--oat-error);
+  --color-orange:          var(--oat-warn);
+  --color-blue:            var(--oat-info);
+  --color-light-border:    var(--oat-border-subtle);
+  --color-secondary-bg:    var(--oat-bg-surface);
+  --color-markup-code-block: var(--oat-bg-sunken);
+  --color-input-background: var(--oat-bg-sunken);
+  --color-input-border:     var(--oat-border-subtle);
+  --color-input-text:       var(--oat-fg-primary);
+  --color-shadow:           rgba(0,255,65,.10);
+  --color-console-bg:       var(--oat-bg-base);
+  --color-console-fg:       var(--oat-fg-primary);
+}
+
+/* ── 4) LibreChat (nanoChat) ──────────────────────────────────────
+   Tailwind-basiert; die Themefarben haengen an `--surface-*`/`--text-*`. */
+:root, .dark {
+  --surface-primary:          var(--oat-bg-base);
+  --surface-primary-alt:      var(--oat-bg-sunken);
+  --surface-primary-contrast: var(--oat-bg-surface);
+  --surface-secondary:        var(--oat-bg-surface);
+  --surface-tertiary:         var(--oat-bg-raised);
+  --surface-hover:            var(--oat-bg-hover);
+  --surface-active:           var(--oat-bg-selected);
+  --surface-submit:           var(--oat-fg-primary);
+  --surface-submit-hover:     var(--oat-fg-accent);
+  --surface-destructive:      var(--oat-error);
+  --text-primary:             var(--oat-fg-primary);
+  --text-secondary:           var(--oat-fg-muted);
+  --text-tertiary:            var(--oat-fg-grey);
+  --text-warning:             var(--oat-warn);
+  --border-light:             var(--oat-border-subtle);
+  --border-medium:            var(--oat-border-default);
+  --border-heavy:             var(--oat-border-strong);
+  --border-xheavy:            var(--oat-border-strong);
+  --header-primary:           var(--oat-bg-sunken);
+  --presentation:             var(--oat-bg-base);
+  --ring-primary:             var(--oat-fg-accent);
+}
+
+/* ── 5) Gemeinsame Politur ueber alle UIs ─────────────────────────
+   Nur Dinge, die keine Variable abdeckt: Schrift, Ecken, Scrollbar. */
+html, body, button, input, select, textarea, .ui, .btn {
+  font-family: var(--oat-font);
+}
+* { border-radius: var(--oat-radius) !important; }   /* eckig, ueberall */
+* { scrollbar-color: var(--oat-fg-muted) var(--oat-bg-sunken); scrollbar-width: thin; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: var(--oat-bg-sunken); }
+*::-webkit-scrollbar-thumb { background: var(--oat-fg-faint); border: 1px solid var(--oat-border-subtle); }
+::selection { background: var(--oat-fg-primary); color: var(--oat-bg-base); }

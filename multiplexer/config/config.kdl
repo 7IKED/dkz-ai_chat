@@ -1,0 +1,65 @@
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  COSMO_V2 // ZELLIJ MULTIPLEXER CONFIG                              ║
+// ║  DEVKiTZ™ Ecosystem · Matrix Theme · portable (Linux/WSL/Docker)   ║
+// ╚══════════════════════════════════════════════════════════════════╝
+
+// Aktives Theme (Definition siehe unten + themes/cosmo-matrix.kdl)
+theme "cosmo-matrix"
+
+// Standard-Layout wenn `zellij` ohne Profil gestartet wird.
+// Der `cosmo` Launcher ueberschreibt das pro Profil.
+default_layout "desktop"
+
+// Sitzungs-Verhalten
+pane_frames        true
+mouse_mode         true
+copy_on_select     true
+scroll_buffer_size 20000
+mirror_session     false
+
+// Wenn ein Layout endet, Session offen halten (praktisch fuer Build-/Test-Panes)
+on_force_close     "detach"
+
+// UI
+ui {
+    pane_frames {
+        rounded_corners true
+        hide_session_name false
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  COSMO MATRIX THEME  (identisch zu den Cosmo Dashboard Mockups)
+//  matrix-green #00FF41 · matrix-dim #008F11 · matrix-warn #ffb000
+// ─────────────────────────────────────────────────────────────────────
+themes {
+    cosmo-matrix {
+        fg      "#00FF41"
+        bg      "#050a05"
+        black   "#000000"
+        red     "#ff3333"
+        green   "#00FF41"
+        yellow  "#ffb000"
+        blue    "#008F11"
+        magenta "#39FF14"
+        cyan    "#008F11"
+        white   "#e5e7eb"
+        orange  "#ffb000"
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+//  KEYBINDS  — Cosmo Ergaenzungen zusaetzlich zu den Zellij Defaults.
+//  Ctrl+p PANES · Ctrl+t TAB · Ctrl+n RESIZE · Ctrl+s SCROLL (wie Mockup)
+// ─────────────────────────────────────────────────────────────────────
+keybinds {
+    shared_except "locked" {
+        // Schnell zwischen Cosmo-Profilen wechseln (neuer Tab mit Profil-Ansicht).
+        // NewTab kann nur Einzel-Tab-Layouts laden → *-tab.kdl Varianten.
+        bind "Alt 1" { NewTab { layout "desktop-tab"; name "HAUPTDECK"; }; }
+        bind "Alt 2" { NewTab { layout "vps-tab";     name "SERVER";    }; }
+        bind "Alt 3" { NewTab { layout "agent-tab";   name "AGENTEN";   }; }
+        bind "Alt 4" { NewTab { layout "builder-tab"; name "BUILDER";   }; }
+        bind "Alt 5" { NewTab { layout "monitor-tab"; name "MONITOR";   }; }
+    }
+}

@@ -1,0 +1,25 @@
+// COSMO // monitor als Einzel-Tab (fuer Alt+5 NewTab-Shortcut)
+layout {
+    pane split_direction="horizontal" {
+        pane split_direction="vertical" {
+            pane name="SYS" {
+                command "bash"
+                args "-lc" "btop 2>/dev/null || htop 2>/dev/null || top"
+            }
+            pane name="NET" {
+                command "bash"
+                args "-lc" "bmon 2>/dev/null || (watch -n1 'ss -tunap 2>/dev/null | head -30')"
+            }
+        }
+        pane split_direction="vertical" {
+            pane name="SECURITY" {
+                command "bash"
+                args "-lc" "watch -n5 '(last -n 10 2>/dev/null; echo; echo FAILED:; grep -i \"fail\" /var/log/auth.log 2>/dev/null | tail -8) || echo security-logs n/a'"
+            }
+            pane name="DISK" {
+                command "bash"
+                args "-lc" "watch -n5 'df -h 2>/dev/null | grep -vE \"tmpfs|udev\"; echo; du -sh * 2>/dev/null | sort -rh | head -8'"
+            }
+        }
+    }
+}

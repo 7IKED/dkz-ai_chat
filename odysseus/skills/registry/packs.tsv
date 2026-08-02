@@ -1,0 +1,60 @@
+# ODYSSEUS Skill-Pack-Registry  ·  name<TAB>url<TAB>kategorie<TAB>beschreibung
+# Installieren:  odysseus skills --pack <name>   |   alle: odysseus skills --all-registry
+# Erweitern: eine Zeile anhaengen (Tab-getrennt). Zeilen mit # werden ignoriert.
+# Alle URLs per GitHub-API auf Existenz + Public-Status verifiziert (2026-07).
+#
+# ── Framework / Meta ────────────────────────────────────────────────
+superpowers	https://github.com/obra/superpowers	framework	Jesse Vincents superpowers — Skills-Framework & SDLC-Methodik (der ist super)
+superpowers-skills	https://github.com/obra/superpowers-skills	framework	Community-editierbare Skills fuer das superpowers-Plugin
+superpowers-lab	https://github.com/obra/superpowers-lab	framework	Experimentelle superpowers-Skills, neue Techniken/Tools
+beastmode	https://github.com/BugRoger/beastmode	framework	Agentic-Workflow-Skills fuer Claude Code (beastmode)
+# ── Offiziell / Engineering ─────────────────────────────────────────
+anthropics-skills	https://github.com/anthropics/skills	official	Offizielles Anthropic-Repo fuer Agent Skills (Referenz-Format)
+mattpocock	https://github.com/mattpocock/skills	engineering	Matt Pococks Engineering-Skills (grill, ask-matt, tdd, research)
+waza	https://github.com/tw93/Waza	engineering	Engineering-Gewohnheiten als ausfuehrbare Claude-Skills
+planning-with-files	https://github.com/OthmanAdi/planning-with-files	planning	Datei-basiertes Planning fuer Agents ueber den SKILL.md-Standard
+# ── Security ────────────────────────────────────────────────────────
+trailofbits-skills	https://github.com/trailofbits/skills	security	Security-Research, Vuln-Detection & Audit-Skills (Trail of Bits)
+ghostsecurity-skills	https://github.com/ghostsecurity/skills	security	AppSec-Skills-Sammlung fuer AI-Coding-Agents
+unitone-securityskills	https://github.com/UnitOneAI/SecuritySkills	security	Security-Skills auf Basis OWASP/NIST/MITRE/CIS
+ctf-skills	https://github.com/ljagiello/ctf-skills	security	Agent-Skills fuer CTF: web, pwn, crypto, RE, forensics, OSINT
+awesome-skills-security	https://github.com/Eyadkelleh/awesome-skills-security	security	Pentest-Toolkit-Skills: Wordlists, Payloads, Expert-Agents
+devops-security-skills	https://github.com/BagelHole/DevOps-Security-Agent-Skills	security	80+ Skills fuer DevOps, Security, Infra & Compliance
+# ── Obsidian ────────────────────────────────────────────────────────
+obsidian-skills	https://github.com/kepano/obsidian-skills	obsidian	Agent-Skills fuer Obsidian CLI, Markdown, Bases, JSON Canvas (kepano)
+obsidian-plugin-skill	https://github.com/gapmiss/obsidian-plugin-skill	obsidian	Agent-SKILL fuer Obsidian.md Plugin-Entwicklung
+obsidian-dev-skills	https://github.com/davidvkimball/obsidian-dev-skills	obsidian	Zentrale Skills fuer Obsidian Plugin- & Theme-Entwicklung
+# ── Wiki / Wissen ───────────────────────────────────────────────────
+llm-wiki-skills	https://github.com/yugasun/llm-wiki-skills	wiki	Cross-Plattform llm-wiki-Skill fuer SKILL.md-Agents
+llm-wiki-vault	https://github.com/vanillaflava/llm-wiki-skills	wiki	Markdown-Vault zur kompoundierenden Wissens-Wiki (Karpathy-inspiriert)
+# ── DevOps / Infra ──────────────────────────────────────────────────
+devops-sre-skills	https://github.com/bregman-arie/devops-sre-skills	devops	SKILL.md-Library fuer DevOps/SRE-Runbooks (Claude/OpenCode)
+devops-skills	https://github.com/abdullahkhawer/devops-skills	devops	Kuratiertes SKILL.md-Set fuer DevOps (AWS, Docker, K8s, Terraform)
+terraform-skill	https://github.com/antonbabenko/terraform-skill	devops	Terraform/OpenTofu-Skill fuer AI-Agents (Module, CI/CD, Tests)
+devops-ai-skill	https://github.com/qwedsazxc78/devops-ai-skill	devops	Cross-Plattform DevOps-Skill-Pack (IaC, GitOps, Diagramme)
+qovery-skills	https://github.com/Qovery/qovery-skills	devops	Skills zum Deployen von Apps auf Kubernetes mit Qovery
+# ── Data Science / Wissenschaft ─────────────────────────────────────
+agent-ml-skills	https://github.com/param087/agent-ml-skills	datascience	ML/Data-Science/MLOps-Skills fuer Coding-Agents
+scientific-agent-skills	https://github.com/K-Dense-AI/scientific-agent-skills	datascience	140+ Science-Skills (Bio, Chem, Medizin, Drug Discovery)
+medical-research-skills	https://github.com/aipoch/medical-research-skills	datascience	Skills fuer Medical Research, Datenanalyse & Academic Writing
+huggingface-skills	https://github.com/huggingface/skills	datascience	Skills fuer das Hugging-Face-Oekosystem
+nature-skills	https://github.com/Yuan1z0825/nature-skills	datascience	Skills fuer Nature-konforme akademische Darstellung & Sci-Grafik
+# ── SEO / Marketing ─────────────────────────────────────────────────
+nextjs-seo-audit	https://github.com/thisisAhsanIqbal/nextjs-seo-audit	seo	11 SKILL.md fuer umfassende SEO-Audits
+seo-content-skills	https://github.com/justinbao19/seo-content-skills	seo	SEO-Content-Suite: Writing, Review, QA, Post-Publish
+ai-marketing-claude	https://github.com/zubair-trabzada/ai-marketing-claude	marketing	15 Marketing-Skills mit parallelen Subagents fuer Claude Code
+channel47-marketing	https://github.com/channel47/skills	marketing	Standalone agentische Marketing-Skills fuer SKILL.md-Agents
+b2b-saas-marketing	https://github.com/Stallin-Sanamandra/b2b-saas-marketing-skills	marketing	B2B-SaaS-Marketing-Skills fuer SKILL.md-kompatible Agents
+# ── YouTube / Video ─────────────────────────────────────────────────
+youtube-skills	https://github.com/ZeroPointRepo/youtube-skills	video	YouTube-Transcript/Search/Channel-Skills fuer AI-Agents
+video-production-kit	https://github.com/selmakcby/video-production-kit	video	Skill: Rohaufnahme -> Transcript, Cut-List, SRT, YT-Description
+video-downloader	https://github.com/zyipeng/video-downloader	video	Universeller Video-Download-Skill (YouTube, Bilibili, TikTok, ...)
+# ── Mobile / Frontend ───────────────────────────────────────────────
+app-store-connect-skills	https://github.com/rorkai/app-store-connect-cli-skills	mobile	Skills zur App-Store-Deployment-Automatisierung via asc CLI
+gsap-skills	https://github.com/greensock/gsap-skills	frontend	Offizielle GSAP-Animations-Skills fuer AI-Coding-Agents
+# ── Writing / Anti-Slop ─────────────────────────────────────────────
+stop-slop	https://github.com/hardikpandya/stop-slop	writing	Skill-Datei zum Entfernen von AI-Tells aus Prosa
+skills-writing	https://github.com/slogsdon/skills-writing	writing	Writing-Skills: AI-Prosa humanisieren, MS-Style-Guide
+llmstrip	https://github.com/HugoLopes45/llmstrip	writing	Entfernt LLM-Schreibmuster aus Prosa/Code (CLI + Claude-Skill)
+# ── Allgemein ───────────────────────────────────────────────────────
+garden-skills	https://github.com/ConardLi/garden-skills	general	Skills-Sammlung: Web-Design, Knowledge-Retrieval, Bildgenerierung

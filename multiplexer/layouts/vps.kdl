@@ -1,0 +1,57 @@
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  PROFIL 2 · VPS-STEUERUNG  //  Remote Server Control              ║
+// ║  cosmo vps  [host1 host2 ...]                                      ║
+// ╚══════════════════════════════════════════════════════════════════╝
+// Steuert einen oder mehrere VPS parallel. Hosts kommen aus der
+// Umgebungsvariable COSMO_VPS_HOSTS (leerzeichen-getrennt, aus ~/.ssh/config
+// oder user@ip). Fallback: interaktiver ssh-Prompt via scripts/vps-connect.sh.
+
+layout {
+    default_tab_template {
+        pane size=1 borderless=true { plugin location="zellij:tab-bar"; }
+        children
+        pane size=2 borderless=true { plugin location="zellij:status-bar"; }
+    }
+
+    // TAB 1 — mehrere Server nebeneinander (Broadcast-faehig via Zellij sync)
+    tab name="SERVER" focus=true {
+        pane split_direction="vertical" {
+            pane name="VPS-1" focus=true {
+                command "bash"
+                args "-lc" "${COSMO_MUX_DIR:-.}/scripts/vps-connect.sh 1"
+            }
+            pane name="VPS-2" {
+                command "bash"
+                args "-lc" "${COSMO_MUX_DIR:-.}/scripts/vps-connect.sh 2"
+            }
+        }
+    }
+
+    // TAB 2 — Remote Docker Uebersicht
+    tab name="DOCKER" {
+        pane split_direction="horizontal" {
+            pane name="CONTAINERS" {
+                command "bash"
+                args "-lc" "watch -n2 'docker ps --format \"table {{.Names}}\\t{{.Status}}\\t{{.Ports}}\" 2>/dev/null || echo docker n/a'"
+            }
+            pane name="STATS" {
+                command "bash"
+                args "-lc" "docker stats 2>/dev/null || echo '[COSMO] docker stats n/a'; exec bash"
+            }
+        }
+    }
+
+    // TAB 3 — Uplink / Netzwerk-Monitoring
+    tab name="UPLINK" {
+        pane split_direction="horizontal" {
+            pane name="NET" {
+                command "bash"
+                args "-lc" "bmon 2>/dev/null || nload 2>/dev/null || (echo '[COSMO] live net n/a'; watch -n1 'ss -tunap 2>/dev/null | head -30')"
+            }
+            pane name="PING" {
+                command "bash"
+                args "-lc" "ping ${COSMO_VPS_PING:-1.1.1.1}"
+            }
+        }
+    }
+}

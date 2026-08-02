@@ -1,0 +1,20 @@
+# Geheimnisse & Laufzeitdaten — NIE committen
+.env
+data/
+
+# Build-Artefakte Version 3
+exe/payload.tar.gz
+exe/dist/
+exe/go.sum
+
+# Geklonte Skill-Packs (extern) — nur Registry + eigener Skill werden committet
+skills/packs/
+
+# Generierte FLOWS-Uebersichten
+skills/FLOWS.md
+
+# URI-Handler (wird von scripts/uri.sh install erzeugt)
+oat-uri.reg
+
+# Cloud Design System — gebaut von design/build.sh
+design/dist/

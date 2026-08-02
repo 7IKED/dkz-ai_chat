@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmo Zellij - 3x Canvas</title>
+    <style>
+        body { background-color: #000; color: #39FF14; font-family: monospace; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 30px;}
+        .canvas-container {
+            position: relative; background-color: #050505; border: 1px solid #39FF14;
+            border-radius: 8px; overflow: hidden; box-shadow: 0 0 20px rgba(57, 255, 20, 0.1);
+            width: 100%; max-width: 800px;
+        }
+        canvas { display: block; width: 100%; height: auto; }
+        .label { color: #6b7280; font-size: 12px; margin-bottom: 5px; width: 100%; max-width: 800px;}
+    </style>
+</head>
+<body>
+    <h1 style="color: #39FF14; text-align: center;">COSMO_V2 // CANVAS RENDERING ENGINE</h1>
+    
+    <div class="label">[1] SPLIT_VIEW (HOME ADMIN)</div>
+    <div class="canvas-container"><canvas id="canvas-split" width="800" height="600"></canvas></div>
+
+    <div class="label">[2] GRID_VIEW (DEVOPS)</div>
+    <div class="canvas-container"><canvas id="canvas-grid" width="800" height="600"></canvas></div>
+
+    <div class="label">[3] FOCUS_VIEW (SECURITY)</div>
+    <div class="canvas-container"><canvas id="canvas-focus" width="800" height="600"></canvas></div>
+
+    <script>
+        const theme = { bg: '#050505', paneBg: '#0a0a0a', neon: '#39FF14', text: '#e5e7eb', dim: '#6b7280', border: '#1f2937' };
+        const state = { cpu: 24, ram: 14.2, logs: ["[SYSTEM] Init Canvas..."], cursor: true, tick: 0 };
+
+        setInterval(() => {
+            state.cpu = Math.floor(Math.random() * 40) + 10;
+            state.cursor = !state.cursor;
+            if(Math.random() > 0.5) state.logs.push(`${new Date().toLocaleTimeString()} - System Check OK`);
+            if(state.logs.length > 10) state.logs.shift();
+        }, 800);
+
+        function drawHeader(ctx, title) {
+            ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 800, 40);
+            ctx.strokeStyle = theme.border; ctx.beginPath(); ctx.moveTo(0, 40); ctx.lineTo(800, 40); ctx.stroke();
+            ctx.font = "bold 14px monospace"; ctx.fillStyle = theme.dim; ctx.textAlign = "center";
+            ctx.fillText(`COSMO_V2@CANVAS ~ ${title}`, 400, 25); ctx.textAlign = "left";
+        }
+
+        function drawPane(ctx, x, y, w, h, title, isActive) {
+            ctx.fillStyle = theme.paneBg; ctx.fillRect(x, y, w, h);
+            ctx.strokeStyle = isActive ? theme.neon : theme.border; ctx.strokeRect(x, y, w, h);
+            ctx.fillStyle = '#050505'; ctx.fillRect(x + 15, y - 8, ctx.measureText(title).width + 24, 16);
+            ctx.fillStyle = isActive ? theme.neon : theme.dim; ctx.fillText(title, x + 20, y + 4);
+        }
+
+        function renderSysMon(ctx, x, y, w, h) {
+            ctx.fillStyle = theme.dim; ctx.fillText("CPU AUSLASTUNG:", x+15, y+30);
+            ctx.fillStyle = theme.neon; ctx.fillRect(x+15, y+40, (w-30)*(state.cpu/100), 10);
+            ctx.strokeStyle = theme.border; ctx.strokeRect(x+15, y+40, w-30, 10);
+        }
+
+        function renderLogs(ctx, x, y, w, h) {
+            state.logs.forEach((log, i) => { ctx.fillStyle = theme.dim; ctx.fillText(log, x+15, y+30+(i*20)); });
+            ctx.fillStyle = theme.neon; ctx.fillText(`cosmo@v2:~$ ${state.cursor ? '█' : ''}`, x+15, y+h-15);
+        }
+
+        function renderLoop() {
+            // Split
+            let ctx = document.getElementById('canvas-split').getContext('2d');
+            ctx.fillStyle = theme.bg; ctx.fillRect(0, 0, 800, 600); drawHeader(ctx, "SPLIT");
+            drawPane(ctx, 15, 55, 250, 500, "SYSMON", true); renderSysMon(ctx, 15, 55, 250, 500);
+            drawPane(ctx, 280, 55, 505, 240, "HOME", false);
+            drawPane(ctx, 280, 310, 505, 245, "LOGS", false); renderLogs(ctx, 280, 310, 505, 245);
+
+            // Grid
+            ctx = document.getElementById('canvas-grid').getContext('2d');
+            ctx.fillStyle = theme.bg; ctx.fillRect(0, 0, 800, 600); drawHeader(ctx, "GRID");
+            drawPane(ctx, 15, 55, 380, 240, "SYS", false); drawPane(ctx, 405, 55, 380, 240, "NET", true);
+            drawPane(ctx, 15, 310, 380, 240, "SEC", false); drawPane(ctx, 405, 310, 380, 240, "LOG", false);
+
+            // Focus
+            ctx = document.getElementById('canvas-focus').getContext('2d');
+            ctx.fillStyle = theme.bg; ctx.fillRect(0, 0, 800, 600); drawHeader(ctx, "FOCUS");
+            drawPane(ctx, 15, 55, 770, 500, "GLOBAL_LOGS", true); renderLogs(ctx, 15, 55, 770, 500);
+
+            requestAnimationFrame(renderLoop);
+        }
+        renderLoop();
+    </script>
+</body>
+</html>

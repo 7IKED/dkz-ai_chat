@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="OPEN AI TERMINAL">
+  <rect width="32" height="32" fill="#000000"/>
+  <rect x="2.5" y="2.5" width="27" height="27" fill="none" stroke="#008F11" stroke-width="1.5"/>
+  <path d="M2.5 2.5h6M2.5 2.5v6M29.5 2.5h-6M29.5 2.5v6M2.5 29.5h6M2.5 29.5v-6M29.5 29.5h-6M29.5 29.5v-6"
+        fill="none" stroke="#00FF41" stroke-width="2"/>
+  <path d="M9 11l5 5-5 5" fill="none" stroke="#00FF41" stroke-width="2.6"
+        stroke-linecap="square" stroke-linejoin="miter"/>
+  <rect x="17" y="19.4" width="7" height="2.6" fill="#39FF14"/>
+</svg>

@@ -1,0 +1,121 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  COSMO_V2 // PERFECT ZSH SETUP                                      ║
+# ║  DEVKiTZ™ Ecosystem · Matrix Theme                                 ║
+# ║  Basierend auf "The Perfect Zsh Setup For 2026":                   ║
+# ║  zinit · autosuggestions · syntax-highlighting · fzf-tab ·         ║
+# ║  completions · zoxide · eza · atuin · starship (mit Fallbacks)     ║
+# ╚══════════════════════════════════════════════════════════════════╝
+# Installation:  multiplexer/shell/install-shell.sh   (verlinkt ~/.zshrc)
+# Alles ist defensiv: fehlt ein Tool, laeuft die Shell trotzdem.
+
+# Basis dieses Setups (fuer Aliases/Prompt-Dateien daneben)
+export COSMO_SHELL_DIR="${COSMO_SHELL_DIR:-${${(%):-%N}:A:h}}"
+
+# ── 1. ZINIT (Plugin-Manager) ────────────────────────────────────────
+# Wird bei Bedarf automatisch nach ~/.local/share/zinit geklont.
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [[ ! -d "$ZINIT_HOME" ]]; then
+    mkdir -p "$(dirname "$ZINIT_HOME")"
+    git clone --depth=1 https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME" 2>/dev/null \
+        || echo "[COSMO] zinit-Klon fehlgeschlagen (offline?) — Shell laeuft ohne Plugins."
+fi
+[[ -f "$ZINIT_HOME/zinit.zsh" ]] && source "$ZINIT_HOME/zinit.zsh"
+
+# ── 2. PLUGINS (async, wie im Video) ────────────────────────────────
+if (( $+functions[zinit] )); then
+    zinit light zsh-users/zsh-syntax-highlighting   # Befehle live einfaerben
+    zinit light zsh-users/zsh-completions           # Extra-Completions
+    zinit light zsh-users/zsh-autosuggestions       # Ghost-Text aus History
+    zinit light Aloxaf/fzf-tab                      # Tab-Menue durch fzf ersetzen
+
+    # Oh-My-Zsh-Snippets ohne Oh-My-Zsh (schnell, nur das Noetige)
+    zinit snippet OMZP::git
+    zinit snippet OMZP::sudo                        # 2x ESC = sudo davor
+    zinit snippet OMZP::command-not-found
+
+    # Completions laden (einmal taeglich neu aufbauen reicht)
+    autoload -Uz compinit && compinit -C
+    zinit cdreplay -q
+else
+    autoload -Uz compinit && compinit -C
+fi
+
+# ── 3. HISTORY (grosszuegig + dedupliziert) ─────────────────────────
+HISTSIZE=10000
+HISTFILE=~/.zsh_history
+SAVEHIST=$HISTSIZE
+HISTDUP=erase
+setopt appendhistory sharehistory
+setopt hist_ignore_space          # Befehle mit fuehrendem Space nicht speichern
+setopt hist_ignore_all_dups hist_save_no_dups hist_ignore_dups hist_find_no_dups
+
+# ── 4. KEYBINDINGS ──────────────────────────────────────────────────
+bindkey -e                                     # Emacs-Modus
+bindkey '^p' history-search-backward           # Ctrl+P: rueckwaerts (nur passende)
+bindkey '^n' history-search-forward            # Ctrl+N: vorwaerts
+bindkey '^[w' kill-region
+
+# ── 5. COMPLETION-STYLING ───────────────────────────────────────────
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'   # case-insensitive
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"     # farbig wie ls
+zstyle ':completion:*' menu no                              # Menue macht fzf-tab
+zstyle ':fzf-tab:complete:cd:*'        fzf-preview 'eza -1 --color=always $realpath 2>/dev/null || ls -1 $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always $realpath 2>/dev/null || ls -1 $realpath'
+
+# ── 6. ALIASES (Matrix/Cosmo) ───────────────────────────────────────
+[[ -f "$COSMO_SHELL_DIR/aliases.zsh" ]] && source "$COSMO_SHELL_DIR/aliases.zsh"
+
+# ── 7. SHELL-INTEGRATIONEN ──────────────────────────────────────────
+# fzf: Ctrl+R History-Suche, Ctrl+T Datei-Suche
+if command -v fzf >/dev/null 2>&1; then
+    export FZF_DEFAULT_OPTS="--color=fg:#00FF41,bg:#000000,hl:#39FF14,fg+:#e5e7eb,bg+:#050a05,hl+:#39FF14,info:#008F11,prompt:#00FF41,pointer:#39FF14,marker:#ffb000,spinner:#008F11,header:#008F11 --border=sharp"
+    # fzf >= 0.48 hat `--zsh`; aeltere Versionen: Distro-Keybindings laden;
+    # fehlen auch die (z.B. Container ohne /usr/share/doc): eigenes Widget.
+    if fzf --zsh >/dev/null 2>&1; then
+        source <(fzf --zsh)
+    else
+        _cosmo_fzf_loaded=0
+        for f in /usr/share/doc/fzf/examples/key-bindings.zsh \
+                 /usr/share/fzf/key-bindings.zsh; do
+            [[ -f "$f" ]] && source "$f" && _cosmo_fzf_loaded=1 && break
+        done
+        if [[ $_cosmo_fzf_loaded -eq 0 ]]; then
+            # Minimal-Widgets: Ctrl+R History-Suche · Ctrl+T Datei-Picker
+            fzf-history-widget() {
+                local sel
+                sel=$(fc -rl 1 | fzf --height=40% --scheme=history \
+                      --query="$LBUFFER" | sed 's/^ *[0-9]*\*\{0,1\} *//')
+                [[ -n "$sel" ]] && LBUFFER="$sel"
+                zle reset-prompt
+            }
+            fzf-file-widget() {
+                local sel
+                sel=$(command find . -path ./.git -prune -o -type f -print 2>/dev/null \
+                      | sed 's|^\./||' | fzf --height=40% --multi)
+                [[ -n "$sel" ]] && LBUFFER+="${sel//$'\n'/ }"
+                zle reset-prompt
+            }
+            zle -N fzf-history-widget; bindkey '^r' fzf-history-widget
+            zle -N fzf-file-widget;    bindkey '^t' fzf-file-widget
+        fi
+        unset _cosmo_fzf_loaded
+    fi
+fi
+
+# zoxide: intelligentes cd  (z <teilname>)
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init --cmd cd zsh)"
+
+# atuin: durchsuchbare, synchronisierbare History (ersetzt Ctrl+R wenn da)
+command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh)"
+
+# ── 8. PROMPT ───────────────────────────────────────────────────────
+# Starship (mit Cosmo-Matrix-Config) wenn installiert, sonst Fallback-Prompt.
+if command -v starship >/dev/null 2>&1; then
+    export STARSHIP_CONFIG="${STARSHIP_CONFIG:-$COSMO_SHELL_DIR/starship.toml}"
+    eval "$(starship init zsh)"
+else
+    source "$COSMO_SHELL_DIR/cosmo-prompt.zsh"
+fi
+
+# ── 9. COSMO-UMGEBUNG ───────────────────────────────────────────────
+[[ -f "$HOME/.config/cosmo/env" ]] && source "$HOME/.config/cosmo/env"

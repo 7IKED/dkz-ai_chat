@@ -1,0 +1,13 @@
+// COSMO // vps als Einzel-Tab (fuer Alt+2 NewTab-Shortcut)
+layout {
+    pane split_direction="vertical" {
+        pane name="VPS-1" focus=true {
+            command "bash"
+            args "-lc" "${COSMO_MUX_DIR:-.}/scripts/vps-connect.sh 1"
+        }
+        pane name="VPS-2" {
+            command "bash"
+            args "-lc" "${COSMO_MUX_DIR:-.}/scripts/vps-connect.sh 2"
+        }
+    }
+}

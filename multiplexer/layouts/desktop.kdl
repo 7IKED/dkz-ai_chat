@@ -1,0 +1,53 @@
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  PROFIL 1 · DESKTOP  //  Arbeitsplatz / Home Admin                 ║
+// ║  cosmo desktop                                                     ║
+// ╚══════════════════════════════════════════════════════════════════╝
+// Split-View wie im Cosmo "SPLIT_VIEW (HOME ADMIN)" Mockup:
+// links Editor/Shell gross, rechts oben System-Monitor, rechts unten Logs.
+
+layout {
+    default_tab_template {
+        pane size=1 borderless=true { plugin location="zellij:tab-bar"; }
+        children
+        pane size=2 borderless=true { plugin location="zellij:status-bar"; }
+    }
+
+    tab name="HAUPTDECK" focus=true {
+        pane split_direction="vertical" {
+            // Grosse Arbeits-/Editor-Spalte
+            pane size="60%" name="EDITOR" focus=true {
+                command "bash"
+                args "-lc" "${EDITOR:-nano} . 2>/dev/null || ${EDITOR:-vi} . 2>/dev/null || exec bash"
+            }
+            pane split_direction="horizontal" {
+                pane name="SYSMON" {
+                    command "bash"
+                    args "-lc" "btop 2>/dev/null || htop 2>/dev/null || top"
+                }
+                pane name="SHELL" {
+                    command "bash"
+                }
+            }
+        }
+    }
+
+    tab name="DATEIEN" {
+        pane split_direction="vertical" {
+            pane name="FILES" {
+                command "bash"
+                args "-lc" "lf 2>/dev/null || ranger 2>/dev/null || ls -la --color=auto; exec bash"
+            }
+            pane name="GIT" {
+                command "bash"
+                args "-lc" "git status 2>/dev/null; git log --oneline -10 2>/dev/null; exec bash"
+            }
+        }
+    }
+
+    tab name="LOGS" {
+        pane name="JOURNAL" {
+            command "bash"
+            args "-lc" "journalctl -f 2>/dev/null || tail -f /var/log/syslog 2>/dev/null || echo '[COSMO] Keine System-Logs verfuegbar — starte Shell'; exec bash"
+        }
+    }
+}

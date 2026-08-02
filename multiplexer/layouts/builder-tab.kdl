@@ -1,0 +1,25 @@
+// COSMO // builder als Einzel-Tab (fuer Alt+4 NewTab-Shortcut)
+layout {
+    pane split_direction="horizontal" {
+        pane split_direction="vertical" {
+            pane name="LANE-A" focus=true {
+                command "bash"
+                args "-lc" "${COSMO_MUX_DIR:-.}/scripts/testlane.sh lane-a \"${COSMO_BUILD_A:-echo 'setze COSMO_BUILD_A, z.B. npm run build'}\"; exec bash"
+            }
+            pane name="LANE-B" {
+                command "bash"
+                args "-lc" "${COSMO_MUX_DIR:-.}/scripts/testlane.sh lane-b \"${COSMO_BUILD_B:-echo 'setze COSMO_BUILD_B'}\"; exec bash"
+            }
+        }
+        pane split_direction="vertical" {
+            pane name="TEST-RUN" {
+                command "bash"
+                args "-lc" "${COSMO_MUX_DIR:-.}/scripts/testlane.sh test \"${COSMO_TEST_CMD:-echo 'setze COSMO_TEST_CMD, z.B. npm test'}\"; exec bash"
+            }
+            pane name="CAPTURE" {
+                command "bash"
+                args "-lc" "${COSMO_MUX_DIR:-.}/scripts/testlane.sh --tail; exec bash"
+            }
+        }
+    }
+}

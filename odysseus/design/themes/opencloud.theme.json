@@ -1,0 +1,122 @@
+{
+  "_comment": [
+    "OPEN AI TERMINAL // OpenCloud-Theme.",
+    "Wird nach /var/lib/opencloud/web/assets/themes/opencloud/theme.json gemountet",
+    "(docker-compose: opencloud-Service, read-only Bind).",
+    "OpenCloud/ownCloud-Web hat den Token-Satz zwischen Versionen umbenannt —",
+    "deshalb stehen hier BEIDE Familien: die alten `swatch-*`/`background-*`",
+    "und die neuen `role-*`. Unbekannte Schluessel ignoriert Web still.",
+    "Garantiert wirksam ist zusaetzlich themes/inject.css (per Reverse-Proxy",
+    "oder Custom-Asset eingebunden) — siehe design/README.md."
+  ],
+  "common": {
+    "name": "OPEN AI TERMINAL",
+    "slogan": "Geschlossenes System · alles lokal · DEVKiTZ™",
+    "logo": {
+      "topbar": "themes/opencloud/assets/logo.svg",
+      "favicon": "themes/opencloud/assets/favicon.svg",
+      "login": "themes/opencloud/assets/logo.svg",
+      "notFound": "themes/opencloud/assets/logo.svg"
+    },
+    "urls": {
+      "accessDeniedHelp": "http://127.0.0.1:3300/DEVKITZ",
+      "imprint": "http://127.0.0.1:3300/DEVKITZ",
+      "privacy": "http://127.0.0.1:3300/DEVKITZ"
+    },
+    "shareRoles": {}
+  },
+  "clients": {
+    "web": {
+      "defaultTheme": "oat-matrix",
+      "themes": [
+        {
+          "isDark": true,
+          "name": "oat-matrix",
+          "label": "OPEN AI TERMINAL — Matrix",
+          "common": {
+            "name": "OPEN AI TERMINAL",
+            "slogan": "Geschlossenes System · alles lokal"
+          },
+          "designTokens": {
+            "breakpoints": {
+              "xsmall": "0",
+              "small": "640px",
+              "medium": "820px",
+              "large": "1200px",
+              "xlarge": "1600px"
+            },
+            "fontFaces": {
+              "default": "ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace",
+              "mono": "ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'Courier New', monospace"
+            },
+            "colorPalette": {
+              "background-accentuate": "#0e2410",
+              "background-highlight": "#0b160b",
+              "background-secondary": "#050a05",
+              "background-default": "#000000",
+              "background-hover": "#0b160b",
+
+              "swatch-brand-default": "#00FF41",
+              "swatch-brand-hover": "#39FF14",
+              "swatch-brand-contrast": "#000000",
+              "swatch-primary-default": "#00FF41",
+              "swatch-primary-hover": "#39FF14",
+              "swatch-primary-muted": "#008F11",
+              "swatch-primary-contrast": "#000000",
+              "swatch-passive-default": "#008F11",
+              "swatch-passive-hover": "#00FF41",
+              "swatch-passive-muted": "#004d0a",
+              "swatch-passive-contrast": "#000000",
+              "swatch-success-default": "#00FF41",
+              "swatch-success-hover": "#39FF14",
+              "swatch-success-muted": "#004d0a",
+              "swatch-success-contrast": "#000000",
+              "swatch-warning-default": "#ffb000",
+              "swatch-warning-hover": "#ffc33d",
+              "swatch-warning-muted": "#4d3500",
+              "swatch-warning-contrast": "#000000",
+              "swatch-danger-default": "#ff3333",
+              "swatch-danger-hover": "#ff5c5c",
+              "swatch-danger-muted": "#4d0f0f",
+              "swatch-danger-contrast": "#000000",
+              "swatch-inverse-default": "#000000",
+
+              "text-default": "#00FF41",
+              "text-muted": "#5a6b5a",
+              "text-inverse": "#000000",
+              "border": "#008F11",
+
+              "role-surface": "#000000",
+              "role-on-surface": "#00FF41",
+              "role-surface-container": "#050a05",
+              "role-surface-container-low": "#030703",
+              "role-surface-container-high": "#070d07",
+              "role-surface-container-highest": "#0b160b",
+              "role-on-surface-variant": "#5a6b5a",
+              "role-surface-variant": "#050a05",
+              "role-primary": "#00FF41",
+              "role-on-primary": "#000000",
+              "role-primary-container": "#0e2410",
+              "role-on-primary-container": "#00FF41",
+              "role-secondary": "#008F11",
+              "role-on-secondary": "#000000",
+              "role-secondary-container": "#004d0a",
+              "role-on-secondary-container": "#00FF41",
+              "role-error": "#ff3333",
+              "role-on-error": "#000000",
+              "role-error-container": "#4d0f0f",
+              "role-on-error-container": "#ff5c5c",
+              "role-outline": "#008F11",
+              "role-outline-variant": "#004d0a"
+            },
+            "spacing": {
+              "xsmall": "4px", "small": "8px", "medium": "16px",
+              "large": "24px", "xlarge": "32px"
+            },
+            "sizes": { "icon-default": "16px" }
+          }
+        }
+      ]
+    }
+  }
+}
